@@ -17,6 +17,11 @@ struct Version {
     int patch;
 };
 
+struct Size {
+    uint32_t width = 0;
+    uint32_t height = 0;
+};
+
 
 constexpr auto APP_NAME = "VTEngine";
 constexpr Version APP_VERSION = { 1, 0, 0 };
