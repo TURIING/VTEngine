@@ -22,6 +22,11 @@ struct Size {
     uint32_t height = 0;
 };
 
+struct PlatformWindowInfo {
+    void *handle = nullptr;
+    Size size;
+};
+
 
 constexpr auto APP_NAME = "VTEngine";
 constexpr Version APP_VERSION = { 1, 0, 0 };
