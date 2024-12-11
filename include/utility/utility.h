@@ -132,4 +132,7 @@ static void checkVkResult(VkResult result, const char *filename, uint32_t line, 
 
 /**************************************************** VKResult END ***************************************************/
 
+namespace Utility {
+        static std::vector<char> readFile(const std::string& filename);
+}
 #endif //UTILITY_H
