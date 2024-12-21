@@ -20,6 +20,7 @@ class ForwardPipeLine final{
 public:
     ForwardPipeLine(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass);
     ~ForwardPipeLine();
+    [[nodiscard]] VkPipeline GetHandle() const { return m_pPipeline->GetHandle(); }
 
 private:
     std::shared_ptr<RHIPipeLineLayout> m_pPipelineLayout;

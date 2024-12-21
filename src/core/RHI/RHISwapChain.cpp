@@ -9,6 +9,7 @@
 #include "core/RHI/RHISwapChain.h"
 
 #include <core/RHI/RHIDevice.h>
+#include <core/RHI/RHISemaphore.h>
 #include <core/RHI/RHISurface.h>
 
 SwapChainSupportDetails SwapChainSupportDetails::GetSwapChainSupportDetails(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
@@ -74,6 +75,17 @@ RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const s
     LOG_INFO("Created SwapChain");
 
     this->createSwapChainImagesAndViews();
+}
+
+bool RHISwapChain::AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) {
+    VkResult result = vkAcquireNextImageKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, UINT64_MAX, semaphore->GetHandle(), nullptr, &imageIndex);
+    if(result == VK_ERROR_OUT_OF_DATE_KHR) {
+        return false;
+    }
+    else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        LOG_CRITICAL("Failed to acquire swap chain image!");
+    }
+    return true;
 }
 
 // 选择合适的表面格式

@@ -7,6 +7,9 @@
 ********************************************************************************/
 
 #include "core/RHI/RHIDevice.h"
+
+#include <core/RHI/RHISemaphore.h>
+
 #include "core/RHI/RHIInstance.h"
 #include "core/RHI/RHISwapChain.h"
 
@@ -37,6 +40,21 @@ QueueFamilyIndices QueueFamilyIndices::GetQueueFamilyIndices(VkPhysicalDevice ph
 
 RHIDevice::RHIDevice(std::shared_ptr<RHIInstance> instance) : m_pInstance(std::move(instance)){
     this->createPhysicalDevice();
+}
+
+void RHIDevice::Present(const std::shared_ptr<RHISemaphore> &waitSemaphore, const std::shared_ptr<RHISwapChain> &swapChain, uint32_t imageIndex) const {
+    VkSemaphore waitSemaphores[] = { waitSemaphore->GetHandle() };
+    VkSwapchainKHR swapChains[] = { swapChain->GetHandle() };
+
+    VkPresentInfoKHR presentInfo = {
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = waitSemaphores,
+        .swapchainCount = 1,
+        .pSwapchains = swapChains,
+        .pImageIndices = &imageIndex,
+    };
+    vkQueuePresentKHR(m_pPresentQueue, &presentInfo);
 }
 
 bool RHIDevice::checkDeviceSupport(VkPhysicalDevice device) const {

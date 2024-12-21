@@ -11,6 +11,8 @@
 
 #include "common/common.h"
 
+class RHISwapChain;
+class RHISemaphore;
 class RHIInstance;
 
 struct QueueFamilyIndices{
@@ -24,8 +26,10 @@ struct QueueFamilyIndices{
 class RHIDevice {
 public:
     explicit RHIDevice(std::shared_ptr<RHIInstance> instance);
-    [[nodiscard]] vkPhysicalDevice GetPhysicalDeviceHandle() const { return m_pPhysicalDevice; }
+    [[nodiscard]] VkPhysicalDevice GetPhysicalDeviceHandle() const { return m_pPhysicalDevice; }
     [[nodiscard]] VkDevice GetLogicalDeviceHandle() const { return m_pLogicalDevice; }
+    [[nodiscard]] VkQueue GetGraphicsQueue() const { return m_pGraphicsQueue; }
+    void Present(const std::shared_ptr<RHISemaphore>& waitSemaphore, const std::shared_ptr<RHISwapChain> &swapChain, uint32_t imageIndex) const;
 
 private:
     [[nodiscard]] bool checkDeviceSupport(VkPhysicalDevice device) const;
