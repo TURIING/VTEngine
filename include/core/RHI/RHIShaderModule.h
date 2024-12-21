@@ -17,6 +17,7 @@ class RHIShaderModule {
 public:
     RHIShaderModule(const std::shared_ptr<RHIDevice>& device, const std::string &shaderPath);
     ~RHIShaderModule();
+    [[nodiscard]] VkShaderModule GetHandle() const { return m_pShaderModule; }
 
 private:
     std::shared_ptr<RHIDevice> m_pDevice;
