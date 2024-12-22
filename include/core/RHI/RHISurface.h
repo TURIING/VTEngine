@@ -16,6 +16,7 @@ class RHIInstance;
 class RHISurface {
 public:
     RHISurface(const std::shared_ptr<RHIInstance> &instance, const void *);
+    ~RHISurface();
     [[nodiscard]] VkSurfaceKHR GetHandle() const { return m_pSurface; }
 
 private:

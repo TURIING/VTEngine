@@ -9,7 +9,8 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include <vulkan/vulkan.h>
+#include <common/common.h>
+#include <fstream>
 #include "LogManager.h"
 
 /**************************************************** VKResult BEGIN ***************************************************/
@@ -133,6 +134,22 @@ static void checkVkResult(VkResult result, const char *filename, uint32_t line, 
 /**************************************************** VKResult END ***************************************************/
 
 namespace Utility {
-        static std::vector<char> readFile(const std::string& filename);
+static std::vector<char> readFile(const std::string& filename) {
+        std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+        if (!file.is_open()) {
+            throw std::runtime_error("failed to open file!");
+        }
+
+        const auto fileSize = static_cast<size_t>(file.tellg());
+        std::vector<char> buffer(fileSize);
+
+        file.seekg(0);
+        file.read(buffer.data(), fileSize);
+
+        file.close();
+
+        return buffer;
+}
 }
 #endif //UTILITY_H

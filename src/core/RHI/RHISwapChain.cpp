@@ -36,7 +36,7 @@ SwapChainSupportDetails SwapChainSupportDetails::GetSwapChainSupportDetails(VkPh
 
 RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHISurface> &surface, const Size &size)
     : m_pInstance(instance), m_pDevice(device), m_size(size){
-    m_swapChainSupportDetails = SwapChainSupportDetails::GetSwapChainSupportDetails(m_pDevice->GetPhysicalDeviceHandle(), surface);
+    m_swapChainSupportDetails = SwapChainSupportDetails::GetSwapChainSupportDetails(m_pDevice->GetPhysicalDeviceHandle(), surface->GetHandle());
     m_pSwapChainSurfaceFormat = this->chooseSwapSurfaceFormat();
     VkPresentModeKHR presentMode = this->chooseSwapPresentMode();
     VkExtent2D swapExtent = this->getSwapChainExtent();
@@ -54,7 +54,7 @@ RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const s
     };
 
     // 指定在多个队列族使用交换链图像的方式
-    QueueFamilyIndices indices = QueueFamilyIndices::GetQueueFamilyIndices(m_pDevice->GetPhysicalDeviceHandle(), surface);
+    QueueFamilyIndices indices = QueueFamilyIndices::GetQueueFamilyIndices(m_pDevice->GetPhysicalDeviceHandle(), surface->GetHandle());
     uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
     if(indices.graphicsFamily != indices.presentFamily) {
         swapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -77,7 +77,17 @@ RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const s
     this->createSwapChainImagesAndViews();
 }
 
-bool RHISwapChain::AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) {
+VkImage RHISwapChain::GetImage(uint32_t index) const {
+    LOG_ASSERT(index >= 0 && index < m_vecSwapChainImages.size());
+    return m_vecSwapChainImages[index];
+}
+
+VkImageView RHISwapChain::GetImageView(uint32_t index) const {
+    LOG_ASSERT(index >= 0 && index < m_vecSwapChainImageViews.size());
+    return m_vecSwapChainImageViews[index];
+}
+
+bool RHISwapChain::AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) const {
     VkResult result = vkAcquireNextImageKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, UINT64_MAX, semaphore->GetHandle(), nullptr, &imageIndex);
     if(result == VK_ERROR_OUT_OF_DATE_KHR) {
         return false;
@@ -141,15 +151,19 @@ void RHISwapChain::createSwapChainImagesAndViews() {
             .image = m_vecSwapChainImages[i],
             .viewType = VK_IMAGE_VIEW_TYPE_2D,
             .format = m_pSwapChainSurfaceFormat.format,
-            .components.r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .components.g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .components.b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .components.a = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .subresourceRange.baseMipLevel = 0,
-            .subresourceRange.levelCount = 1,
-            .subresourceRange.baseArrayLayer = 0,
-            .subresourceRange.layerCount = 1,
+            .components = {
+                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            },
+            .subresourceRange = {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            }
         };
         CALL_VK(vkCreateImageView(m_pDevice->GetLogicalDeviceHandle(), &imageViewCreateInfo, nullptr, &m_vecSwapChainImageViews[i]));
     }

@@ -48,7 +48,7 @@ void RHIInstance::createInstance() {
     }
 
     if constexpr (ENABLE_VALIDATION_LAYERS) {
-        REQUIRE_INSTANCE_EXT.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+        // REQUIRE_INSTANCE_EXT.push_back();
     }
 
     // appInfo
@@ -73,7 +73,7 @@ void RHIInstance::createInstance() {
     if(ENABLE_VALIDATION_LAYERS) {
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{
             .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-            .pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo,
+            // .pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo,
             .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
             .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
             .pfnUserCallback = debugCallBack,
@@ -90,6 +90,7 @@ void RHIInstance::createInstance() {
     }
 
     CALL_VK(vkCreateInstance(&createInfo, nullptr, &m_pInstance));
+    LOG_INFO("Instance created");
 }
 
 bool RHIInstance::checkValidationLayerSupport() {
@@ -106,10 +107,10 @@ bool RHIInstance::checkValidationLayerSupport() {
                 layerFound = true;
                 break;
             }
+        }
 
-            if(!layerFound) {
-                return false;
-            }
+        if(!layerFound) {
+            return false;
         }
     }
 
@@ -121,11 +122,11 @@ void RHIInstance::setupDebugMessenger() {
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{
         .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+        .pNext = nullptr,
         .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
         .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
         .pfnUserCallback = debugCallBack,
         .pUserData = nullptr,
-        .pNext = nullptr,
     };
 
     CALL_VK(createDebugUtilsMessengerExt(m_pInstance, &debugCreateInfo, nullptr, &m_pDebugMessenger));

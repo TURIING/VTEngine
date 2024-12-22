@@ -29,3 +29,7 @@ RHISurface::RHISurface(const std::shared_ptr<RHIInstance> &instance, const void 
     CALL_VK(vkCreateMacOSSurfaceMVK(m_pInstance->GetHandle(), &surfaceCreateInfo, nullptr, &m_pSurface));
 #endif
 }
+
+RHISurface::~RHISurface() {
+    vkDestroySurfaceKHR(m_pInstance->GetHandle(), m_pSurface, nullptr);
+}

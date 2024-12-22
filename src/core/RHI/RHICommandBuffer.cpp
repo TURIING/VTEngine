@@ -56,8 +56,10 @@ void RHICommandBuffer::BeginRenderPass(const std::shared_ptr<RHIRenderPass> &ren
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = renderPass->GetHandle(),
         .framebuffer = framebuffer->GetHandle(),
-        .renderArea.offset = {0, 0},
-        .renderArea.extent = { size.width, size.height },
+        .renderArea = {
+            .offset = { 0, 0 },
+            .extent = { size.width, size.height }
+        },
         .clearValueCount = 1,
         .pClearValues = clearValues.data(),
     };

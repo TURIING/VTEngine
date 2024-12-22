@@ -14,7 +14,7 @@
 #include <core/RHI/RHIDevice.h>
 #include <core/RHI/RHIFence.h>
 #include <core/RHI/rhiframebuffer.h>
-#include <core/RHI/RHIRenderPass.h>
+#include <core/pass/ForwardPass.h>
 #include <core/RHI/RHISurface.h>
 #include <core/RHI/RHISwapChain.h>
 #include <core/RHI/RHIInstance.h>
@@ -23,13 +23,13 @@
 RHIContext::RHIContext(const PlatformWindowInfo &info) {
     m_pInstance = std::make_shared<RHIInstance>();
     m_pSurface = std::make_shared<RHISurface>(m_pInstance, info.handle);
-    m_pDevice = std::make_shared<RHIDevice>(m_pInstance);
+    m_pDevice = std::make_shared<RHIDevice>(m_pInstance, m_pSurface);
     m_pSwapChain = std::make_shared<RHISwapChain>(m_pInstance, m_pDevice, m_pSurface, info.size);
-    m_pRenderPass = std::make_shared<RHIRenderPass>(m_pDevice);
+    m_pRenderPass = std::make_shared<ForwardPass>(m_pDevice, m_pSwapChain->GetColorFormat());
     m_pForwardPipeLine = std::make_shared<ForwardPipeLine>(m_pDevice, m_pRenderPass);
 
     const auto size = m_pSwapChain->GetSize();
-    for(auto i = 0; i <= m_pSwapChain->GetImageCount(); i++) {
+    for(auto i = 0; i < m_pSwapChain->GetImageCount(); i++) {
         m_vecFrameBuffer.emplace_back(std::make_shared<RHIFrameBuffer>(m_pDevice, m_pRenderPass, m_pSwapChain->GetImageView(i), size));
     }
 
@@ -43,7 +43,7 @@ RHIContext::RHIContext(const PlatformWindowInfo &info) {
     m_pInFlightFence = std::make_shared<RHIFence>(m_pDevice);
 }
 
-void RHIContext::Render() {
+void RHIContext::Render() const {
     uint32_t imageIndex = 0;
     if(!prepareFrame(imageIndex)) return;
 
@@ -72,7 +72,7 @@ void RHIContext::Render() {
     m_pCommandBuffer->EndRecord(0);
 
     m_pCommandBuffer->Submit(0, m_pImageAvailableSemaphore, m_pRenderFinishedSemaphore, m_pInFlightFence);
-    m_pDevice->Present(m_pImageAvailableSemaphore, m_pSwapChain, imageIndex);
+    m_pDevice->Present(m_pRenderFinishedSemaphore, m_pSwapChain, imageIndex);
 }
 
 bool RHIContext::prepareFrame(uint32_t &imageIndex) const {

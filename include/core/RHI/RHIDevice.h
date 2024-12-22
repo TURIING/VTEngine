@@ -11,6 +11,7 @@
 
 #include "common/common.h"
 
+class RHISurface;
 class RHISwapChain;
 class RHISemaphore;
 class RHIInstance;
@@ -25,7 +26,7 @@ struct QueueFamilyIndices{
 
 class RHIDevice {
 public:
-    explicit RHIDevice(std::shared_ptr<RHIInstance> instance);
+    explicit RHIDevice(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHISurface> &surface);
     [[nodiscard]] VkPhysicalDevice GetPhysicalDeviceHandle() const { return m_pPhysicalDevice; }
     [[nodiscard]] VkDevice GetLogicalDeviceHandle() const { return m_pLogicalDevice; }
     [[nodiscard]] VkQueue GetGraphicsQueue() const { return m_pGraphicsQueue; }
@@ -40,6 +41,7 @@ private:
 
 private:
     std::shared_ptr<RHIInstance> m_pInstance = nullptr;
+    std::shared_ptr<RHISurface> m_pSurface = nullptr;
     VkPhysicalDevice m_pPhysicalDevice = nullptr;
     VkDevice m_pLogicalDevice = nullptr;
     VkQueue m_pGraphicsQueue = nullptr;

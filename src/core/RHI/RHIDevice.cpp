@@ -11,6 +11,7 @@
 #include <core/RHI/RHISemaphore.h>
 
 #include "core/RHI/RHIInstance.h"
+#include "core/RHI/RHISurface.h"
 #include "core/RHI/RHISwapChain.h"
 
 
@@ -38,8 +39,9 @@ QueueFamilyIndices QueueFamilyIndices::GetQueueFamilyIndices(VkPhysicalDevice ph
     return indices;
 }
 
-RHIDevice::RHIDevice(std::shared_ptr<RHIInstance> instance) : m_pInstance(std::move(instance)){
+RHIDevice::RHIDevice(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHISurface> &surface) : m_pInstance(instance), m_pSurface(surface) {
     this->createPhysicalDevice();
+    this->createLogicalDevice();
 }
 
 void RHIDevice::Present(const std::shared_ptr<RHISemaphore> &waitSemaphore, const std::shared_ptr<RHISwapChain> &swapChain, uint32_t imageIndex) const {
@@ -58,12 +60,12 @@ void RHIDevice::Present(const std::shared_ptr<RHISemaphore> &waitSemaphore, cons
 }
 
 bool RHIDevice::checkDeviceSupport(VkPhysicalDevice device) const {
-    const auto indices = QueueFamilyIndices::GetQueueFamilyIndices(device, m_pInstance->GetSurface());
+    const auto indices = QueueFamilyIndices::GetQueueFamilyIndices(device, m_pSurface->GetHandle());
     const auto extensionSupported = checkDeviceExtensionSupport(device);
 
     auto isSwapChainAdequate = false;
     if(extensionSupported) {
-        const auto swapChainSupportDetails = SwapChainSupportDetails::GetSwapChainSupportDetails(device, m_pInstance->GetSurface());
+        const auto swapChainSupportDetails = SwapChainSupportDetails::GetSwapChainSupportDetails(device, m_pSurface->GetHandle());
         isSwapChainAdequate = !swapChainSupportDetails.formats.empty() && !swapChainSupportDetails.presentModes.empty();
     }
 
@@ -86,10 +88,8 @@ bool RHIDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 }
 
 bool RHIDevice::checkPresentSupport(VkPhysicalDevice device, uint32_t queueFamilyIndex) const {
-    LOG_ASSERT(m_pInstance->GetSurface() != nullptr);
-
     VkBool32 presentSupport = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(m_pPhysicalDevice, queueFamilyIndex, m_pInstance->GetSurface(), &presentSupport);
+    vkGetPhysicalDeviceSurfaceSupportKHR(m_pPhysicalDevice, queueFamilyIndex, m_pSurface->GetHandle(), &presentSupport);
     return presentSupport;
 }
 
@@ -107,10 +107,11 @@ void RHIDevice::createPhysicalDevice() {
         }
     }
     LOG_ASSERT_INFO(m_pPhysicalDevice != VK_NULL_HANDLE, "failed to find a suitable GPU!");
+    LOG_INFO("Physical GPU found!");
 }
 
 void RHIDevice::createLogicalDevice() {
-    const auto indices = QueueFamilyIndices::GetQueueFamilyIndices(m_pPhysicalDevice, m_pInstance->GetSurface());
+    const auto indices = QueueFamilyIndices::GetQueueFamilyIndices(m_pPhysicalDevice, m_pSurface->GetHandle());
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
@@ -141,6 +142,7 @@ void RHIDevice::createLogicalDevice() {
         createInfo.ppEnabledLayerNames = &VK_LAYER_KHRONOS_VALIDATION;
     }
     CALL_VK(vkCreateDevice(m_pPhysicalDevice, &createInfo, nullptr, &m_pLogicalDevice));
+    LOG_INFO("Logical Device created!");
 
     if(this->checkPresentSupport(m_pPhysicalDevice, indices.graphicsFamily.value())) {
         vkGetDeviceQueue(m_pLogicalDevice, indices.graphicsFamily.value(), 0, &m_pGraphicsQueue);

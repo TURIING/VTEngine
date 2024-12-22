@@ -9,7 +9,7 @@
 
 #include <core/RHI/RHIDevice.h>
 
-RHICommandPool::RHICommandPool(const std::shared_ptr<RHIDevice> &device, uint32_t queueFamilyIndex) {
+RHICommandPool::RHICommandPool(const std::shared_ptr<RHIDevice> &device, uint32_t queueFamilyIndex): m_pDevice(device) {
     VkCommandPoolCreateInfo poolInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
         .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,

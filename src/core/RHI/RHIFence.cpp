@@ -9,7 +9,7 @@
 
 #include <core/RHI/RHIDevice.h>
 
-RHIFence::RHIFence(const std::shared_ptr<RHIDevice> &device) {
+RHIFence::RHIFence(const std::shared_ptr<RHIDevice> &device): m_pDevice(device) {
     VkFenceCreateInfo fenceCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
         .flags = VK_FENCE_CREATE_SIGNALED_BIT,

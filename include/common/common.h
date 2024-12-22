@@ -15,8 +15,8 @@
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 #include "BaseDefine.h"
-#include "../utility/LogManager.h"
-#include "../utility/utility.h"
+#include "utility/LogManager.h"
+#include "utility/utility.h"
 
 
 #endif //COMMON_H

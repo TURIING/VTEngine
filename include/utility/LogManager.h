@@ -20,20 +20,17 @@
 class LogManager {
 public:
     void Init();
-    void Debug(std::string info) const;
-    void Info(std::string info) const;
-    void Warning(std::string info) const;
-    void Critical(std::string info) const;
+    [[nodiscard]] std::shared_ptr<spdlog::logger> GetLogger() { return m_pLogger; }
 
 private:
     std::shared_ptr<spdlog::logger> m_pLogger;
 };
 
-#define LOG_DEBUG(...) Singleton<LogManager>::GetInstance()->Debug(std::format(__VA_ARGS__))
-#define LOG_INFO(...) Singleton<LogManager>::GetInstance()->Info(std::format(__VA_ARGS__))
-#define LOG_WARNING(...) Singleton<LogManager>::GetInstance()->Warning(std::format(__VA_ARGS__))
+#define LOG_DEBUG(...) SPDLOG_LOGGER_DEBUG(Singleton<LogManager>::GetInstance()->GetLogger(), std::format(__VA_ARGS__))
+#define LOG_INFO(...) SPDLOG_LOGGER_INFO(Singleton<LogManager>::GetInstance()->GetLogger(), std::format(__VA_ARGS__))
+#define LOG_WARNING(...) SPDLOG_LOGGER_WARN(Singleton<LogManager>::GetInstance()->GetLogger(), std::format(__VA_ARGS__))
 #define LOG_CRITICAL(...) \
-Singleton<LogManager>::GetInstance()->Critical(std::format(__VA_ARGS__)); \
+SPDLOG_LOGGER_CRITICAL(Singleton<LogManager>::GetInstance()->GetLogger(), std::format(__VA_ARGS__)); \
 std::exit(EXIT_FAILURE);
 
 #define LOG_ASSERT(CONDITION) if(!(CONDITION)){ LOG_CRITICAL("Assert failed({0})", #CONDITION); }

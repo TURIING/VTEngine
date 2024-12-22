@@ -10,7 +10,7 @@
 #include <core/RHI/RHIDevice.h>
 #include <core/RHI/RHIPipeLineState.h>
 
-RHIPipeLine::RHIPipeLine(const std::shared_ptr<RHIDevice> &device, RHIPipelineState &pipeLineState) {
+RHIPipeLine::RHIPipeLine(const std::shared_ptr<RHIDevice> &device, RHIPipelineState &pipeLineState): m_pDevice(device) {
     this->createPipeline(pipeLineState);
 }
 
