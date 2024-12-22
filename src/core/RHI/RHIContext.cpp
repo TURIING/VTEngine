@@ -52,19 +52,20 @@ void RHIContext::Render() const {
     m_pCommandBuffer->BeginRenderPass(m_pRenderPass, m_vecFrameBuffer[imageIndex], 0, m_pSwapChain->GetSize());
     m_pCommandBuffer->BindPineLine(m_pForwardPipeLine, 0);
 
-    constexpr VkViewport viewport = {
+    const auto size = m_pSwapChain->GetSize();
+    const VkViewport viewport = {
         .x = 0,
         .y = 0,
-        .width = 1200,
-        .height = 800,
+        .width = static_cast<float>(size.width),
+        .height = static_cast<float>(size.height),
         .minDepth = 0.0f,
         .maxDepth = 1.0f,
     };
     m_pCommandBuffer->SetViewport(0, 0, 1, viewport);
 
-    constexpr VkRect2D scissor = {
+    const VkRect2D scissor = {
         .offset = {0, 0},
-        .extent = {1200, 800}
+        .extent = { size.width, size.height }
     };
     m_pCommandBuffer->SetScissor(0, 0, 1, scissor);
     m_pCommandBuffer->Draw(0);

@@ -168,4 +168,5 @@ void RHISwapChain::createSwapChainImagesAndViews() {
         CALL_VK(vkCreateImageView(m_pDevice->GetLogicalDeviceHandle(), &imageViewCreateInfo, nullptr, &m_vecSwapChainImageViews[i]));
     }
     LOG_INFO("Created SwapChain images");
+    LOG_INFO("SwapChain image size: ({}, {}), image count: {}", m_size.width, m_size.height, imageCount);
 }

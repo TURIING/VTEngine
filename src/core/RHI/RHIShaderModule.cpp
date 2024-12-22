@@ -18,7 +18,7 @@ RHIShaderModule::RHIShaderModule(const std::shared_ptr<RHIDevice> &device, const
         .pCode = reinterpret_cast<const uint32_t *>(shaderCode.data())
     };
     CALL_VK(vkCreateShaderModule(m_pDevice->GetLogicalDeviceHandle(), &shaderModuleCreateInfo, nullptr, &m_pShaderModule));
-    LOG_INFO("Shader module created successfully");
+    LOG_INFO("Shader module created successfully! Path: {}", shaderPath);
 }
 
 RHIShaderModule::~RHIShaderModule() {
