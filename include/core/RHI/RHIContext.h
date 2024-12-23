@@ -26,10 +26,12 @@ class RHIInstance;
 class RHIContext {
 public:
     explicit RHIContext(const PlatformWindowInfo &info);
-    void Render() const;
+    void Render();
+    void Resize(Size size) const;
 
 private:
     bool prepareFrame(uint32_t &imageIndex) const;
+    void createSyncObject();
 
 private:
     std::shared_ptr<RHIInstance> m_pInstance;
@@ -41,9 +43,11 @@ private:
     std::vector<std::shared_ptr<RHIFrameBuffer>> m_vecFrameBuffer;
     std::shared_ptr<RHICommandPool> m_pCommandPool;
     std::shared_ptr<RHICommandBuffer> m_pCommandBuffer;
-    std::shared_ptr<RHIFence> m_pInFlightFence;
-    std::shared_ptr<RHISemaphore> m_pImageAvailableSemaphore;
-    std::shared_ptr<RHISemaphore> m_pRenderFinishedSemaphore;
+    std::vector<std::shared_ptr<RHIFence>> m_vecInFlightFence;
+    std::vector<std::shared_ptr<RHISemaphore>> m_vecImageAvailableSemaphore;
+    std::vector<std::shared_ptr<RHISemaphore>> m_vecRenderFinishedSemaphore;
+    Size m_size;
+    uint32_t m_currentFrameIndex = 0;
 };
 
 #endif //RHICONTEXT_H

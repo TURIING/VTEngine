@@ -12,7 +12,7 @@
 RHIFence::RHIFence(const std::shared_ptr<RHIDevice> &device): m_pDevice(device) {
     VkFenceCreateInfo fenceCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-        .flags = VK_FENCE_CREATE_SIGNALED_BIT,
+        .flags = VK_FENCE_CREATE_SIGNALED_BIT,                                                  // 用于指定围栏在创建时的初始状态为“已触发”（signaled）
     };
     vkCreateFence(m_pDevice->GetLogicalDeviceHandle(), &fenceCreateInfo, nullptr, &m_pFence);
     LOG_INFO("Fence created");

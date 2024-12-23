@@ -30,7 +30,7 @@ struct PlatformWindowInfo {
 
 constexpr auto APP_NAME = "VTEngine";
 constexpr Version APP_VERSION = { 1, 0, 0 };
-constexpr Size WINDOW_SIZE = { 1200, 800 };
+constexpr Size WINDOW_SIZE = { 1200, 1000 };
 inline constexpr float FRAME_TIME = 1/60.0;                                                                         // 每秒里每帧的耗时
 
 constexpr bool ENABLE_VALIDATION_LAYERS = true;                                                                     // 是否开启校验层

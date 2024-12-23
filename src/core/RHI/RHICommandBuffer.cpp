@@ -21,7 +21,7 @@ RHICommandBuffer::RHICommandBuffer(const std::shared_ptr<RHIDevice> &device, con
     VkCommandBufferAllocateInfo allocInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
         .commandPool = m_pCommandPool->GetHandle(),
-        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,                                                   // 可以被提交到队列进行执行，但不能被其它指令缓冲对象调用
         .commandBufferCount = count,
     };
     m_vecCommandBuffer.resize(count);

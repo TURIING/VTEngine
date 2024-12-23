@@ -31,6 +31,7 @@ public:
     [[nodiscard]] VkDevice GetLogicalDeviceHandle() const { return m_pLogicalDevice; }
     [[nodiscard]] VkQueue GetGraphicsQueue() const { return m_pGraphicsQueue; }
     void Present(const std::shared_ptr<RHISemaphore>& waitSemaphore, const std::shared_ptr<RHISwapChain> &swapChain, uint32_t imageIndex) const;
+    void WaitIdle() const;
 
 private:
     [[nodiscard]] bool checkDeviceSupport(VkPhysicalDevice device) const;

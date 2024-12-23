@@ -59,6 +59,11 @@ void RHIDevice::Present(const std::shared_ptr<RHISemaphore> &waitSemaphore, cons
     vkQueuePresentKHR(m_pPresentQueue, &presentInfo);
 }
 
+void RHIDevice::WaitIdle() const {
+    LOG_ASSERT(m_pLogicalDevice);
+    vkDeviceWaitIdle(m_pLogicalDevice);
+}
+
 bool RHIDevice::checkDeviceSupport(VkPhysicalDevice device) const {
     const auto indices = QueueFamilyIndices::GetQueueFamilyIndices(device, m_pSurface->GetHandle());
     const auto extensionSupported = checkDeviceExtensionSupport(device);
