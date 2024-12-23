@@ -11,6 +11,7 @@
 #include "ui/window/mainwindow.h"
 #include "ui_MainWindow.h"
 #include "app/Application.h"
+#include "app/UIEvent.h"
 
 MainWindow::MainWindow(const std::string &title, const Size &size, Application *app, QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow), m_pApp(app) {
     ui->setupUi(this);
@@ -33,6 +34,7 @@ void MainWindow::Update() {
 }
 
 void MainWindow::paintEvent(QPaintEvent *event) {
-    m_pApp->Render();
+    RenderRequestEvent renderRequestEvent;
+    m_pApp->ProcessEvent(renderRequestEvent);
     QWidget::paintEvent(event);
 }

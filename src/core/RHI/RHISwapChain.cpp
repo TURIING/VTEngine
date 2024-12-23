@@ -77,6 +77,13 @@ RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const s
     this->createSwapChainImagesAndViews();
 }
 
+RHISwapChain::~RHISwapChain() {
+    for(const auto pImageView: m_vecSwapChainImageViews) {
+        vkDestroyImageView(m_pDevice->GetLogicalDeviceHandle(), pImageView, nullptr);
+    }
+    vkDestroySwapchainKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, nullptr);
+}
+
 VkImage RHISwapChain::GetImage(uint32_t index) const {
     LOG_ASSERT(index >= 0 && index < m_vecSwapChainImages.size());
     return m_vecSwapChainImages[index];
@@ -87,15 +94,8 @@ VkImageView RHISwapChain::GetImageView(uint32_t index) const {
     return m_vecSwapChainImageViews[index];
 }
 
-bool RHISwapChain::AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) const {
-    VkResult result = vkAcquireNextImageKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, UINT64_MAX, semaphore->GetHandle(), nullptr, &imageIndex);
-    if(result == VK_ERROR_OUT_OF_DATE_KHR) {
-        return false;
-    }
-    else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        LOG_CRITICAL("Failed to acquire swap chain image!");
-    }
-    return true;
+VkResult RHISwapChain::AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) const {
+    return vkAcquireNextImageKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, UINT64_MAX, semaphore->GetHandle(), nullptr, &imageIndex);
 }
 
 // 选择合适的表面格式

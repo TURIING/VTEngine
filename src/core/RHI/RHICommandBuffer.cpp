@@ -18,6 +18,8 @@
 #include "core/RHI/RHICommandPool.h"
 
 RHICommandBuffer::RHICommandBuffer(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHICommandPool> &commandPool, uint32_t count): m_pDevice(device), m_pCommandPool(commandPool) {
+    LOG_ASSERT(count != 0);
+
     VkCommandBufferAllocateInfo allocInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
         .commandPool = m_pCommandPool->GetHandle(),
@@ -30,6 +32,7 @@ RHICommandBuffer::RHICommandBuffer(const std::shared_ptr<RHIDevice> &device, con
 }
 
 RHICommandBuffer::~RHICommandBuffer() {
+    vkFreeCommandBuffers(m_pDevice->GetLogicalDeviceHandle(), m_pCommandPool->GetHandle(), static_cast<uint32_t>(m_vecCommandBuffer.size()), m_vecCommandBuffer.data());
 }
 
 void RHICommandBuffer::Reset(uint32_t index) const {

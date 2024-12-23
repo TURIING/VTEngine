@@ -11,15 +11,20 @@
 
 #include "common/common.h"
 
+class RenderRequestEvent;
 class RHIContext;
 class MainWindow;
+class Event;
 
 class Application {
 public:
     Application();
     ~Application();
-    void Render() const;
     void Run() const;
+    void ProcessEvent(Event &event);
+
+private:
+    void render(RenderRequestEvent &event) const;
 
 private:
     MainWindow *m_pWindow = nullptr;

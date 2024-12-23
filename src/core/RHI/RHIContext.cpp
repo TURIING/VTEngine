@@ -78,24 +78,44 @@ void RHIContext::Render() {
     m_currentFrameIndex = (m_currentFrameIndex + 1) % MAX_FRAME_IN_FLIGHT;
 }
 
-void RHIContext::Resize(Size size) const {
+void RHIContext::Resize(Size size) {
+    m_size = size;
+    m_pDevice->WaitIdle();
+    this->cleanSwapChain();
+
+    m_pSwapChain = std::make_shared<RHISwapChain>(m_pInstance, m_pDevice, m_pSurface, size);
+
+    const auto newSize = m_pSwapChain->GetSize();
+    for(auto i = 0; i < m_pSwapChain->GetImageCount(); i++) {
+        m_vecFrameBuffer.emplace_back(std::make_shared<RHIFrameBuffer>(m_pDevice, m_pRenderPass, m_pSwapChain->GetImageView(i), newSize));
+    }
 }
 
-bool RHIContext::prepareFrame(uint32_t &imageIndex) const {
+bool RHIContext::prepareFrame(uint32_t &imageIndex) {
     m_vecInFlightFence[m_currentFrameIndex]->Wait();
+
     const auto result = m_pSwapChain->AcquireNextImage(m_vecImageAvailableSemaphore[m_currentFrameIndex], imageIndex);
+    if(result == VK_ERROR_OUT_OF_DATE_KHR) {
+        // this->Resize(m_size);
+        return false;
+    }
+    else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        LOG_CRITICAL("Failed to acquire swap chain image!");
+    }
+
     m_vecInFlightFence[m_currentFrameIndex]->Reset();
     return result;
 }
 
 void RHIContext::createSyncObject() {
-    // m_vecImageAvailableSemaphore.resize(MAX_FRAME_IN_FLIGHT);
-    // m_vecRenderFinishedSemaphore.resize(MAX_FRAME_IN_FLIGHT);
-    // m_vecInFlightFence.resize(MAX_FRAME_IN_FLIGHT);
-
     for(auto i = 0; i < MAX_FRAME_IN_FLIGHT; i++) {
         m_vecImageAvailableSemaphore.emplace_back(std::make_shared<RHISemaphore>(m_pDevice));
         m_vecRenderFinishedSemaphore.emplace_back(std::make_shared<RHISemaphore>(m_pDevice));
         m_vecInFlightFence.emplace_back(std::make_shared<RHIFence>(m_pDevice));
     }
+}
+
+void RHIContext::cleanSwapChain() {
+    m_vecFrameBuffer.clear();
+    m_pSwapChain.reset();
 }

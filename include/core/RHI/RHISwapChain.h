@@ -27,13 +27,14 @@ struct SwapChainSupportDetails {
 class RHISwapChain {
 public:
     RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHISurface> &surface, const Size &size);
+    ~RHISwapChain();
     [[nodiscard]] VkSwapchainKHR GetHandle() const { return m_pSwapChain; }
     [[nodiscard]] uint32_t GetImageCount() const { return m_vecSwapChainImages.size(); }
     [[nodiscard]] VkImage GetImage(uint32_t index) const;
     [[nodiscard]] VkImageView GetImageView(uint32_t index) const;
     [[nodiscard]] Size GetSize() const { return m_size; }
     [[nodiscard]] VkFormat GetColorFormat() const { return m_pSwapChainSurfaceFormat.format; }
-    bool AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) const;
+    VkResult AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) const;
 
 private:
     [[nodiscard]] VkSurfaceFormatKHR chooseSwapSurfaceFormat();

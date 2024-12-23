@@ -11,6 +11,8 @@
 
 #include "common.h"
 
+/************************************************* Type *************************************************************/
+
 struct Version {
     int major;
     int minor;
@@ -27,6 +29,17 @@ struct PlatformWindowInfo {
     Size size;
 };
 
+enum class MouseButton { Left, Middle, Right };
+
+struct Point {
+    int x = 0;
+    int y = 0;
+};
+
+/************************************************* Marco ************************************************************/
+#define BIT(x) (1 << x)
+
+/************************************************* Variable *********************************************************/
 
 constexpr auto APP_NAME = "VTEngine";
 constexpr Version APP_VERSION = { 1, 0, 0 };

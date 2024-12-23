@@ -27,11 +27,12 @@ class RHIContext {
 public:
     explicit RHIContext(const PlatformWindowInfo &info);
     void Render();
-    void Resize(Size size) const;
+    void Resize(Size size);
 
 private:
-    bool prepareFrame(uint32_t &imageIndex) const;
+    bool prepareFrame(uint32_t &imageIndex);
     void createSyncObject();
+    void cleanSwapChain();
 
 private:
     std::shared_ptr<RHIInstance> m_pInstance;

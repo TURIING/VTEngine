@@ -9,6 +9,8 @@
 
 #include "core/RHI/RHIContext.h"
 #include "ui/window/mainwindow.h"
+#include "app/Event.h"
+#include "app/UIEvent.h"
 
 Application::Application() {
     m_pWindow = new MainWindow(APP_NAME, WINDOW_SIZE, this);
@@ -24,9 +26,14 @@ void Application::Run() const {
     m_pWindow->Update();
 }
 
+void Application::ProcessEvent(Event &event) {
+    EventDispatcher dispatcher(event);
+    dispatcher.dispatch<RenderRequestEvent>(std::bind(&Application::render, this, std::placeholders::_1));
+}
+
 Application::~Application() {
 }
 
-void Application::Render() const {
+void Application::render(RenderRequestEvent &event) const {
     m_pRHIContext->Render();
 }

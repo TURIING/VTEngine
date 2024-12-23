@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 #include <set>
+#include <functional>
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 #include "BaseDefine.h"
