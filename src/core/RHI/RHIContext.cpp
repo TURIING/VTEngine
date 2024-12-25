@@ -104,7 +104,7 @@ bool RHIContext::prepareFrame(uint32_t &imageIndex) {
     }
 
     m_vecInFlightFence[m_currentFrameIndex]->Reset();
-    return result;
+    return true;
 }
 
 void RHIContext::createSyncObject() {
