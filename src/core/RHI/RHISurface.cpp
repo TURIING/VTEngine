@@ -20,7 +20,7 @@ RHISurface::RHISurface(const std::shared_ptr<RHIInstance> &instance, const void 
 
     CALL_VK(vkCreateWin32SurfaceKHR(m_pInstance->GetHandle(), &surfaceCreateInfo, nullptr, &m_pSurface));
 #elif PLATFORM_MACOS
-    const VkMacOSSurfaceCreateInfoMVK mvkSurfaceCreateInfo{
+    const VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo{
         .sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK,
         .pNext = nullptr,
         .pView = handle,

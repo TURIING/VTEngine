@@ -49,10 +49,13 @@ inline constexpr float FRAME_TIME = 1/60.0;                                     
 constexpr bool ENABLE_VALIDATION_LAYERS = true;                                                                     // 是否开启校验层
 const std::vector<const char*> REQUIRE_VALIDATION_LAYERS = { "VK_LAYER_KHRONOS_validation" };
 constexpr const char *VK_LAYER_KHRONOS_VALIDATION = "VK_LAYER_KHRONOS_validation";
-const std::vector<const char*> REQUIRE_DEVICE_EXTENSION = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 #if PLATFORM_WINDOWS
 const std::vector<const char*> REQUIRE_INSTANCE_EXT = { "VK_KHR_surface", "VK_KHR_win32_surface", VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
+const std::vector<const char*> REQUIRE_DEVICE_EXTENSION = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+#elif PLATFORM_MACOS
+const std::vector<const char*> REQUIRE_INSTANCE_EXT = { "VK_KHR_surface", "VK_MVK_macos_surface", VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
+const std::vector<const char*> REQUIRE_DEVICE_EXTENSION = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_portability_subset" };
 #endif
 
 #endif //BASEDEFINE_H

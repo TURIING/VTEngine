@@ -17,7 +17,7 @@ function(COMPILE_SHADER shader_file output_dir)
 
     # 调用 glslangValidator 编译 GLSL 文件
     execute_process(
-            COMMAND glslangValidator.exe -V ${shader_file} -o ${output_file}
+            COMMAND ${SHADER_COMPILER} -V ${shader_file} -o ${output_file}
             RESULT_VARIABLE result
             OUTPUT_VARIABLE output
             ERROR_VARIABLE error

@@ -66,6 +66,9 @@ void RHIInstance::createInstance() {
     // createInfo
     VkInstanceCreateInfo createInfo = {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+#if PLATFORM_MACOS
+        .flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR,
+#endif
         .pApplicationInfo = &appInfo,
         .enabledExtensionCount = static_cast<uint32_t>(REQUIRE_INSTANCE_EXT.size()),
         .ppEnabledExtensionNames = REQUIRE_INSTANCE_EXT.data()

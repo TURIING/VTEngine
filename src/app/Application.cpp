@@ -15,7 +15,7 @@
 Application::Application() {
     m_pWindow = new MainWindow(APP_NAME, WINDOW_SIZE, this);
     const PlatformWindowInfo winInfo {
-        .handle = reinterpret_cast<void *>(m_pWindow->winId()),
+        .handle = reinterpret_cast<void *>(m_pWindow->GetSurfaceHandle()),
         .size = WINDOW_SIZE,
     };
     m_pRHIContext = std::make_shared<RHIContext>(winInfo);
