@@ -27,6 +27,9 @@ public:
     void Update();
     [[nodiscard]] void *GetSurfaceHandle();
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
     inline void init(const std::string &title, const Size &size);
     inline void createSurfaceWindow();

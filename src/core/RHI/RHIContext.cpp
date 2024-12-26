@@ -96,7 +96,7 @@ bool RHIContext::prepareFrame(uint32_t &imageIndex) {
 
     const auto result = m_pSwapChain->AcquireNextImage(m_vecImageAvailableSemaphore[m_currentFrameIndex], imageIndex);
     if(result == VK_ERROR_OUT_OF_DATE_KHR) {
-        // this->Resize(m_size);
+         this->Resize(m_size);
         return false;
     }
     else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {

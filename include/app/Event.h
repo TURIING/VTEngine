@@ -31,6 +31,11 @@ public:
     virtual int GetEventKind() = 0;
     virtual std::string GetEventName() { return typeid(*this).name(); }
     bool isBelongEventKind(EventKind kind) { return GetEventKind() & kind; }
+    virtual void SetFunc(std::function<void()> func) { m_func = func; }
+    std::function<void()> GetFunc() { return m_func; }
+
+private:
+    std::function<void()> m_func = [] {};
 };
 
 class EventDispatcher
@@ -47,6 +52,7 @@ public:
         if (m_event.GetEventType() == T::GetStaticType())
         {
             func(*static_cast<T *>(&m_event));
+            m_event.GetFunc()();
             return true;
         }
         return false;

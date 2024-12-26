@@ -12,6 +12,7 @@
 #include "common/common.h"
 
 class RenderRequestEvent;
+class WindowResizeEvent;
 class RHIContext;
 class MainWindow;
 class Event;
@@ -25,7 +26,7 @@ public:
 
 private:
     void render(RenderRequestEvent &event) const;
-
+    void resize(WindowResizeEvent &event) const;
 private:
     MainWindow *m_pWindow = nullptr;
     std::shared_ptr<RHIContext> m_pRHIContext;

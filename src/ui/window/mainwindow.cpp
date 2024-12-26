@@ -12,6 +12,7 @@
 #include "ui_MainWindow.h"
 #include <QWindow>
 #include <QSurface>
+#include <QResizeEvent>
 #include "app/Application.h"
 #include "app/UIEvent.h"
 
@@ -51,4 +52,14 @@ void MainWindow::init(const std::string &title, const Size &size) {
     this->resize(size.width, size.height);
     this->setAttribute(Qt::WA_NativeWindow);
     this->createSurfaceWindow();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    const auto size = this->size();
+    WindowResizeEvent resizeEvent(Size { static_cast<uint32_t>(size.width()), static_cast<uint32_t>(size.height())});
+    resizeEvent.SetFunc([] {
+        LOG_INFO("The window size has changed.");
+    });
+    m_pApp->ProcessEvent(resizeEvent);
+    QWidget::resizeEvent(event);
 }

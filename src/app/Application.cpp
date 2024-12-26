@@ -29,6 +29,7 @@ void Application::Run() const {
 void Application::ProcessEvent(Event &event) {
     EventDispatcher dispatcher(event);
     dispatcher.dispatch<RenderRequestEvent>(std::bind(&Application::render, this, std::placeholders::_1));
+    dispatcher.dispatch<WindowResizeEvent>(std::bind(&Application::resize, this, std::placeholders::_1));
 }
 
 Application::~Application() {
@@ -36,4 +37,8 @@ Application::~Application() {
 
 void Application::render(RenderRequestEvent &event) const {
     m_pRHIContext->Render();
+}
+
+void Application::resize(WindowResizeEvent &event) const {
+    m_pRHIContext->Resize(event.GetSize());
 }
