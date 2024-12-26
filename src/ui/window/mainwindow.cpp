@@ -35,13 +35,16 @@ void MainWindow::Update() {
     m_timer.start();
 }
 
-void *MainWindow::GetSurfaceHandle() {
+void *MainWindow::GetSurfaceHandle() const {
     return reinterpret_cast<void *>(m_pSurface->winId());
 }
 
 void MainWindow::createSurfaceWindow() {
     m_pSurface = new QWindow();
+
+#if PLATFORM_MACOS
     m_pSurface->setSurfaceType(QSurface::VulkanSurface);
+#endif
 
     const auto surfaceWidget = this->createWindowContainer(m_pSurface, this);
     this->layout()->addWidget(surfaceWidget);

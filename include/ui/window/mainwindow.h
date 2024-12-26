@@ -25,7 +25,7 @@ public:
     explicit MainWindow(const std::string &title, const Size &size, Application *app, QWidget *parent = nullptr);
     ~MainWindow() override;
     void Update();
-    [[nodiscard]] void *GetSurfaceHandle();
+    [[nodiscard]] void *GetSurfaceHandle() const;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
