@@ -42,7 +42,7 @@ void RHICommandBuffer::Reset(uint32_t index) const {
 void RHICommandBuffer::BeginRecord(uint32_t currentframeIndex) {
     VkCommandBufferBeginInfo beginInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        // .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+         .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
     };
     CALL_VK(vkBeginCommandBuffer(m_vecCommandBuffer[currentframeIndex], &beginInfo));
 }

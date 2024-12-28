@@ -13,7 +13,7 @@
 #include <core/RHI/RHICommandPool.h>
 #include <core/RHI/RHIDevice.h>
 #include <core/RHI/RHIFence.h>
-#include <core/RHI/rhiframebuffer.h>
+#include <core/RHI/RHIFrameBuffer.h>
 #include <core/pass/ForwardPass.h>
 #include <core/RHI/RHISurface.h>
 #include <core/RHI/RHISwapChain.h>
@@ -43,7 +43,7 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
 
     this->createSyncObject();
 
-    m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_vecVertices);
+    m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_pCommandPool, m_vecVertices);
 }
 
 void RHIContext::Render() {

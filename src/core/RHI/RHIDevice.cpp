@@ -9,7 +9,7 @@
 #include "core/RHI/RHIDevice.h"
 
 #include <core/RHI/RHISemaphore.h>
-
+#include "core/RHI/RHISingleTimeCommandBuffer.h"
 #include "core/RHI/RHIInstance.h"
 #include "core/RHI/RHISurface.h"
 #include "core/RHI/RHISwapChain.h"
@@ -194,4 +194,9 @@ uint32_t RHIDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pr
     }
 
     LOG_CRITICAL("Failed to find suitable memory type.");
+}
+
+void RHIDevice::CopyBuffer(const std::shared_ptr<RHICommandPool> &commandPool, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    const auto commandBuffer = std::make_unique<RHISingleTimeCommandBuffer>(this, commandPool);
+    commandBuffer->CopyBuffer(srcBuffer, dstBuffer, size);
 }
