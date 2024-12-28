@@ -6,7 +6,6 @@
 * @description: 
 ********************************************************************************/
 #include "app/Application.h"
-
 #include "core/RHI/RHIContext.h"
 #include "ui/window/mainwindow.h"
 #include "app/Event.h"
@@ -14,12 +13,12 @@
 
 Application::Application() {
     m_pWindow = new MainWindow(APP_NAME, WINDOW_SIZE, this);
+    m_pWindow->show();
     const PlatformWindowInfo winInfo {
         .handle = reinterpret_cast<void *>(m_pWindow->GetSurfaceHandle()),
         .size = WINDOW_SIZE,
     };
     m_pRHIContext = std::make_shared<RHIContext>(winInfo);
-    m_pWindow->show();
 }
 
 void Application::Run() const {

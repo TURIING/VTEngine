@@ -45,24 +45,31 @@ void MainWindow::createSurfaceWindow() {
 #if PLATFORM_MACOS
     m_pSurface->setSurfaceType(QSurface::VulkanSurface);
 #endif
-
     const auto surfaceWidget = this->createWindowContainer(m_pSurface, this);
-    this->layout()->addWidget(surfaceWidget);
+    surfaceWidget->setAttribute(Qt::WA_NativeWindow);
+    surfaceWidget->setAttribute(Qt::WA_DontCreateNativeAncestors);
+
+    const auto layout = new QHBoxLayout(ui->pSurfaceWidget);
+    layout->setContentsMargins(QMargins());
+    layout->addWidget(surfaceWidget);
 }
 
 void MainWindow::init(const std::string &title, const Size &size) {
     this->setWindowTitle(QString::fromStdString(title));
     this->resize(size.width, size.height);
-    this->setAttribute(Qt::WA_NativeWindow);
     this->createSurfaceWindow();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
-    const auto size = this->size();
-    WindowResizeEvent resizeEvent(Size { static_cast<uint32_t>(size.width()), static_cast<uint32_t>(size.height())});
-    resizeEvent.SetFunc([] {
-        LOG_INFO("The window size has changed.");
-    });
-    m_pApp->ProcessEvent(resizeEvent);
+    if(m_timer.isActive()) {
+        const auto size = this->size();
+        WindowResizeEvent resizeEvent(Size { static_cast<uint32_t>(size.width()), static_cast<uint32_t>(size.height())});
+        resizeEvent.SetFunc([this] {
+            const auto size = this->size();
+            const auto surfaceSize = m_pSurface->size();
+            LOG_INFO("The window size has changed, MainWindow size({}, {}), Surface widget size({}, {})", size.width(), size.height(), surfaceSize.width(), surfaceSize.height());
+        });
+        m_pApp->ProcessEvent(resizeEvent);
+    }
     QWidget::resizeEvent(event);
 }
