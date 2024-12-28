@@ -19,6 +19,7 @@ class RHIRenderPass;
 class RHICommandPool;
 class RHIDevice;
 class RHIVertexBuffer;
+class RHIIndexBuffer;
 
 class RHICommandBuffer {
 public:
@@ -31,9 +32,11 @@ public:
     void EndRenderPass(uint32_t currentFrameIndex) const;
     void BindPineLine(const std::shared_ptr<ForwardPipeLine>& pineLine, uint32_t currentFrameIndex) const;
     void BindVertexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIVertexBuffer> &buffer, VkDeviceSize *offset, uint32_t firstBindingIndex, uint32_t bindingCount);
+    void BindIndexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIIndexBuffer> &indexBuffer, VkDeviceSize offset, VkIndexType indexType);
     void SetViewport(uint32_t currentFrameIndex, uint32_t firstViewportIndex, uint32_t viewportCount, const VkViewport &viewport) const;
     void SetScissor(uint32_t currentFrameIndex, uint32_t firstScissorIndex, uint32_t scissorCount, const VkRect2D &scissor) const;
-    void Draw(uint32_t currentFrameIndex);
+    void Draw(uint32_t currentFrameIndex, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertexIndex, uint32_t firstInstanceIndex);
+    void DrawIndex(uint32_t currentFrameIndex, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance);
     void Submit(uint32_t currentFrameIndex, const std::shared_ptr<RHISemaphore> &waitSemaphore, const std::shared_ptr<RHISemaphore> &signalSemaphore, const std::shared_ptr<RHIFence> &inFightFence) const;
 
 private:

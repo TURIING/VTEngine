@@ -24,6 +24,7 @@ class RHISwapChain;
 class RHIDevice;
 class RHIInstance;
 class RHIVertexBuffer;
+class RHIIndexBuffer;
 
 class RHIContext {
 public:
@@ -46,6 +47,7 @@ private:
     std::vector<std::shared_ptr<RHIFrameBuffer>> m_vecFrameBuffer;
     std::shared_ptr<RHICommandPool> m_pCommandPool;
     std::shared_ptr<RHIVertexBuffer> m_pVertexBuffer;
+    std::shared_ptr<RHIIndexBuffer> m_pIndexBuffer;
     std::shared_ptr<RHICommandBuffer> m_pCommandBuffer;
     std::vector<std::shared_ptr<RHIFence>> m_vecInFlightFence;
     std::vector<std::shared_ptr<RHISemaphore>> m_vecImageAvailableSemaphore;
@@ -53,10 +55,13 @@ private:
     Size m_size;
     uint32_t m_currentFrameIndex = 0;
     const std::vector<Vertex> m_vecVertices = {
-            { { 0.0f,  -0.5f, 0.0f }, { 1.0, 0.0, 0.0 } },
-            { { 0.5f,  0.5f, 0.0f }, { 0.0, 1.0, 0.0 } },
-            { { -0.5f, 0.5f, 0.0f }, { 0.0, 0.0, 1.0} },
+            { { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+            { { 0.5f,  -0.5f, 0.0f }, { 0.0, 1.0, 0.0 } },
+            { { 0.5f,  0.5f, 0.0f }, { 0.0, 0.0, 1.0 } },
+            { { -0.5f, 0.5f, 0.0f }, { 1.0, 1.0, 1.0} },
     };
+    const std::vector<uint32_t> m_vecIndices = { 0, 1, 2, 2, 3, 0 };
+
 };
 
 #endif //RHICONTEXT_H

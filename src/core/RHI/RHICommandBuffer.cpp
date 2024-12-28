@@ -15,6 +15,7 @@
 #include <core/RHI/RHIRenderPass.h>
 #include <core/RHI/RHISemaphore.h>
 #include "core/RHI/RHIVertexBuffer.h"
+#include "core/RHI/RHIIndexBuffer.h"
 #include "core/RHI/RHICommandPool.h"
 
 RHICommandBuffer::RHICommandBuffer(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHICommandPool> &commandPool, uint32_t count): m_pDevice(device), m_pCommandPool(commandPool) {
@@ -85,8 +86,8 @@ void RHICommandBuffer::SetScissor(uint32_t currentFrameIndex, uint32_t firstScis
     vkCmdSetScissor(m_vecCommandBuffer[currentFrameIndex], firstScissorIndex, scissorCount, &scissor);
 }
 
-void RHICommandBuffer::Draw(uint32_t currentFrameIndex) {
-    vkCmdDraw(m_vecCommandBuffer[currentFrameIndex], 3, 1, 0, 0);
+void RHICommandBuffer::Draw(uint32_t currentFrameIndex, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertexIndex, uint32_t firstInstanceIndex) {
+    vkCmdDraw(m_vecCommandBuffer[currentFrameIndex], vertexCount, instanceCount, firstVertexIndex, firstInstanceIndex);
 }
 
 void RHICommandBuffer::Submit(uint32_t currentFrameIndex, const std::shared_ptr<RHISemaphore> &waitSemaphore, const std::shared_ptr<RHISemaphore> &signalSemaphore, const std::shared_ptr<RHIFence> &inFightFence) const {
@@ -110,4 +111,12 @@ void RHICommandBuffer::Submit(uint32_t currentFrameIndex, const std::shared_ptr<
 void RHICommandBuffer::BindVertexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIVertexBuffer> &buffer, VkDeviceSize *offset, uint32_t firstBindingIndex, uint32_t bindingCount) {
     VkBuffer vertexBuffers[] = { buffer->GetHandle() };
     vkCmdBindVertexBuffers(m_vecCommandBuffer[currentFrameIndex], firstBindingIndex, bindingCount, vertexBuffers, offset);
+}
+
+void RHICommandBuffer::BindIndexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIIndexBuffer> &indexBuffer, VkDeviceSize offset, VkIndexType indexType) {
+    vkCmdBindIndexBuffer(m_vecCommandBuffer[currentFrameIndex], indexBuffer->GetHandle(), offset, indexType);
+}
+
+void RHICommandBuffer::DrawIndex(uint32_t currentFrameIndex, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance) {
+    vkCmdDrawIndexed(m_vecCommandBuffer[currentFrameIndex], indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
