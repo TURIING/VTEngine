@@ -156,3 +156,42 @@ void RHIDevice::createLogicalDevice() {
         vkGetDeviceQueue(m_pLogicalDevice, indices.presentFamily.value(), 0, &m_pPresentQueue);
     }
 }
+
+void RHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
+    // 创建缓冲
+    VkBufferCreateInfo bufferInfo {
+        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+        .size = size,
+        .usage = usage,
+        .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+    };
+    CALL_VK(vkCreateBuffer(m_pLogicalDevice, &bufferInfo, nullptr, &buffer));
+
+    // 获取缓冲的内存需求
+    VkMemoryRequirements memoryRequirements;
+    vkGetBufferMemoryRequirements(m_pLogicalDevice, buffer, &memoryRequirements);
+
+    // 分配内存
+    VkMemoryAllocateInfo allocateInfo {
+        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+        .allocationSize = memoryRequirements.size,
+        .memoryTypeIndex = findMemoryType(memoryRequirements.memoryTypeBits, properties)
+    };
+    CALL_VK(vkAllocateMemory(m_pLogicalDevice, &allocateInfo, nullptr, &bufferMemory));
+
+    vkBindBufferMemory(m_pLogicalDevice, buffer, bufferMemory, 0);
+}
+
+uint32_t RHIDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+    // 查询物理设备可用的内存类型
+    VkPhysicalDeviceMemoryProperties memoryProperties;
+    vkGetPhysicalDeviceMemoryProperties(m_pPhysicalDevice, &memoryProperties);
+
+    for(auto i = 0; i < memoryProperties.memoryTypeCount; i++) {
+        if((typeFilter & (1 << i)) && (memoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+
+    LOG_CRITICAL("Failed to find suitable memory type.");
+}

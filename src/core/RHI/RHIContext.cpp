@@ -19,6 +19,7 @@
 #include <core/RHI/RHISwapChain.h>
 #include <core/RHI/RHIInstance.h>
 #include <core/RHI/RHISemaphore.h>
+#include "core/RHI/RHIVertexBuffer.h"
 
 constexpr int MAX_FRAME_IN_FLIGHT = 2;
 
@@ -41,6 +42,8 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
     m_pCommandBuffer = std::make_shared<RHICommandBuffer>(m_pDevice, m_pCommandPool, MAX_FRAME_IN_FLIGHT);
 
     this->createSyncObject();
+
+    m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_vecVertices);
 }
 
 void RHIContext::Render() {
@@ -67,7 +70,10 @@ void RHIContext::Render() {
         .offset = {0, 0},
         .extent = { size.width, size.height }
     };
+
+    VkDeviceSize offset[] = { 0 };
     m_pCommandBuffer->SetScissor(m_currentFrameIndex, 0, 1, scissor);
+    m_pCommandBuffer->BindVertexBuffer(m_currentFrameIndex, m_pVertexBuffer, offset, 0, 1);
     m_pCommandBuffer->Draw(m_currentFrameIndex);
     m_pCommandBuffer->EndRenderPass(m_currentFrameIndex);
     m_pCommandBuffer->EndRecord(m_currentFrameIndex);

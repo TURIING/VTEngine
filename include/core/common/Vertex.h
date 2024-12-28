@@ -21,9 +21,9 @@ struct Vertex
     static VkVertexInputBindingDescription GetBindingDescription()
     {
         VkVertexInputBindingDescription bindingDescription{};
-        bindingDescription.binding = 0;
+        bindingDescription.binding = 0;                                                 // 绑定的索引号
         bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;                     // 在每个顶点之后移动到下一个数据条目
 
         return bindingDescription;
     }

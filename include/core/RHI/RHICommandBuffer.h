@@ -18,6 +18,7 @@ class RHIFrameBuffer;
 class RHIRenderPass;
 class RHICommandPool;
 class RHIDevice;
+class RHIVertexBuffer;
 
 class RHICommandBuffer {
 public:
@@ -29,6 +30,7 @@ public:
     void BeginRenderPass(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIFrameBuffer>& framebuffer, uint32_t currentFrame, Size size) const;
     void EndRenderPass(uint32_t currentFrameIndex) const;
     void BindPineLine(const std::shared_ptr<ForwardPipeLine>& pineLine, uint32_t currentFrameIndex) const;
+    void BindVertexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIVertexBuffer> &buffer, VkDeviceSize *offset, uint32_t firstBindingIndex, uint32_t bindingCount);
     void SetViewport(uint32_t currentFrameIndex, uint32_t firstViewportIndex, uint32_t viewportCount, const VkViewport &viewport) const;
     void SetScissor(uint32_t currentFrameIndex, uint32_t firstScissorIndex, uint32_t scissorCount, const VkRect2D &scissor) const;
     void Draw(uint32_t currentFrameIndex);

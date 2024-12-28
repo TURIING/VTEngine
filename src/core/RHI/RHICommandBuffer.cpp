@@ -14,7 +14,7 @@
 #include <core/RHI/RHIPipeLine.h>
 #include <core/RHI/RHIRenderPass.h>
 #include <core/RHI/RHISemaphore.h>
-
+#include "core/RHI/RHIVertexBuffer.h"
 #include "core/RHI/RHICommandPool.h"
 
 RHICommandBuffer::RHICommandBuffer(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHICommandPool> &commandPool, uint32_t count): m_pDevice(device), m_pCommandPool(commandPool) {
@@ -105,4 +105,9 @@ void RHICommandBuffer::Submit(uint32_t currentFrameIndex, const std::shared_ptr<
         .pSignalSemaphores = signalSemaphores,
     };
     CALL_VK(vkQueueSubmit(m_pDevice->GetGraphicsQueue(), 1, &submitInfo, inFightFence->GetHandle()));
+}
+
+void RHICommandBuffer::BindVertexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIVertexBuffer> &buffer, VkDeviceSize *offset, uint32_t firstBindingIndex, uint32_t bindingCount) {
+    VkBuffer vertexBuffers[] = { buffer->GetHandle() };
+    vkCmdBindVertexBuffers(m_vecCommandBuffer[currentFrameIndex], firstBindingIndex, bindingCount, vertexBuffers, offset);
 }

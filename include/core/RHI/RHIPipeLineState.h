@@ -48,10 +48,10 @@ struct RHIPipelineVertexInputState
     [[nodiscard]] VkPipelineVertexInputStateCreateInfo GetCreateInfo() const {
         VkPipelineVertexInputStateCreateInfo vertexInputState{};
         vertexInputState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputState.vertexBindingDescriptionCount = 0;
-        // vertexInputState.pVertexBindingDescriptions = &bindingDescription;
-        vertexInputState.vertexAttributeDescriptionCount = 0;
-        // vertexInputState.pVertexAttributeDescriptions = attributeDescriptions.data();
+        vertexInputState.vertexBindingDescriptionCount = 1;
+        vertexInputState.pVertexBindingDescriptions = &bindingDescription;
+        vertexInputState.vertexAttributeDescriptionCount = attributeDescriptions.size();
+        vertexInputState.pVertexAttributeDescriptions = attributeDescriptions.data();
         return vertexInputState;
     }
 };

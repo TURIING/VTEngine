@@ -30,6 +30,7 @@ public:
     [[nodiscard]] VkPhysicalDevice GetPhysicalDeviceHandle() const { return m_pPhysicalDevice; }
     [[nodiscard]] VkDevice GetLogicalDeviceHandle() const { return m_pLogicalDevice; }
     [[nodiscard]] VkQueue GetGraphicsQueue() const { return m_pGraphicsQueue; }
+    void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
     void Present(const std::shared_ptr<RHISemaphore>& waitSemaphore, const std::shared_ptr<RHISwapChain> &swapChain, uint32_t imageIndex) const;
     void WaitIdle() const;
 
@@ -39,6 +40,7 @@ private:
     [[nodiscard]] bool checkPresentSupport(VkPhysicalDevice device, uint32_t queueFamilyIndex) const;
     void createPhysicalDevice();
     void createLogicalDevice();
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 private:
     std::shared_ptr<RHIInstance> m_pInstance = nullptr;

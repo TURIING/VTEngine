@@ -10,6 +10,7 @@
 #define RHICONTEXT_H
 
 #include "common/common.h"
+#include "core/common/Vertex.h"
 
 class RHIFence;
 class RHISemaphore;
@@ -22,6 +23,7 @@ class RHISurface;
 class RHISwapChain;
 class RHIDevice;
 class RHIInstance;
+class RHIVertexBuffer;
 
 class RHIContext {
 public:
@@ -43,12 +45,18 @@ private:
     std::shared_ptr<ForwardPipeLine> m_pForwardPipeLine;
     std::vector<std::shared_ptr<RHIFrameBuffer>> m_vecFrameBuffer;
     std::shared_ptr<RHICommandPool> m_pCommandPool;
+    std::shared_ptr<RHIVertexBuffer> m_pVertexBuffer;
     std::shared_ptr<RHICommandBuffer> m_pCommandBuffer;
     std::vector<std::shared_ptr<RHIFence>> m_vecInFlightFence;
     std::vector<std::shared_ptr<RHISemaphore>> m_vecImageAvailableSemaphore;
     std::vector<std::shared_ptr<RHISemaphore>> m_vecRenderFinishedSemaphore;
     Size m_size;
     uint32_t m_currentFrameIndex = 0;
+    const std::vector<Vertex> m_vecVertices = {
+            { { 0.0f,  -0.5f, 0.0f }, { 1.0, 0.0, 0.0 } },
+            { { 0.5f,  0.5f, 0.0f }, { 0.0, 1.0, 0.0 } },
+            { { -0.5f, 0.5f, 0.0f }, { 0.0, 0.0, 1.0} },
+    };
 };
 
 #endif //RHICONTEXT_H
