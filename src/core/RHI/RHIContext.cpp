@@ -19,8 +19,13 @@
 #include <core/RHI/RHISwapChain.h>
 #include <core/RHI/RHIInstance.h>
 #include <core/RHI/RHISemaphore.h>
+
+#include "core/RHI/RHIDescriptorPool.h"
+#include "core/RHI/RHIDescriptorSet.h"
+#include "core/RHI/RHIDescriptorSetLayout.h"
 #include "core/RHI/RHIVertexBuffer.h"
 #include "core/RHI/RHIIndexBuffer.h"
+#include "core/RHI/RHIUniformBuffer.h"
 
 constexpr int MAX_FRAME_IN_FLIGHT = 2;
 
@@ -30,7 +35,9 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
     m_pDevice = std::make_shared<RHIDevice>(m_pInstance, m_pSurface);
     m_pSwapChain = std::make_shared<RHISwapChain>(m_pInstance, m_pDevice, m_pSurface, info.size);
     m_pRenderPass = std::make_shared<ForwardPass>(m_pDevice, m_pSwapChain->GetColorFormat());
-    m_pForwardPipeLine = std::make_shared<ForwardPipeLine>(m_pDevice, m_pRenderPass);
+    std::vector<RHIDescriptorType> vecTypes = { RHIDescriptorType::ConstantBuffer };
+    m_pDescriptorSetLayout = std::make_shared<RHIDescriptorSetLayout>(m_pDevice, vecTypes);
+    m_pForwardPipeLine = std::make_shared<ForwardPipeLine>(m_pDevice, m_pRenderPass, m_pDescriptorSetLayout);
 
     const auto size = m_pSwapChain->GetSize();
     for(auto i = 0; i < m_pSwapChain->GetImageCount(); i++) {
@@ -46,6 +53,11 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
 
     m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_pCommandPool, m_vecVertices);
     m_pIndexBuffer = std::make_shared<RHIIndexBuffer>(m_pDevice, m_pCommandPool, m_vecIndices);
+
+    m_pUniformBuffer = std::make_shared<RHIUniformBuffer>(m_pDevice, sizeof(GlobalUniformObject));
+    m_pDescriptorPool = std::make_shared<RHIDescriptorPool>(m_pDevice);
+    m_pDescriptorSet = std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, m_pDescriptorSetLayout);
+    m_pDescriptorSet->UpdateUniformBuffer(m_pUniformBuffer, 0);
 }
 
 void RHIContext::Render() {
@@ -56,6 +68,8 @@ void RHIContext::Render() {
     m_pCommandBuffer->BeginRecord(m_currentFrameIndex);
     m_pCommandBuffer->BeginRenderPass(m_pRenderPass, m_vecFrameBuffer[imageIndex], m_currentFrameIndex, m_pSwapChain->GetSize());
     m_pCommandBuffer->BindPineLine(m_pForwardPipeLine, m_currentFrameIndex);
+
+    this->updateUniformBuffer();
 
     const auto size = m_pSwapChain->GetSize();
     const VkViewport viewport = {
@@ -74,9 +88,11 @@ void RHIContext::Render() {
     };
 
     VkDeviceSize offset[] = { 0 };
+    std::vector<VkDescriptorSet> vecDescriptorSets = { m_pDescriptorSet->GetHandle() };
     m_pCommandBuffer->SetScissor(m_currentFrameIndex, 0, 1, scissor);
     m_pCommandBuffer->BindVertexBuffer(m_currentFrameIndex, m_pVertexBuffer, offset, 0, 1);
     m_pCommandBuffer->BindIndexBuffer(m_currentFrameIndex, m_pIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+    m_pCommandBuffer->BindDescriptorSets(m_currentFrameIndex, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pForwardPipeLine->GetPipelineLayout(), vecDescriptorSets, 0);
 //    m_pCommandBuffer->Draw(m_currentFrameIndex, m_vecVertices.size(), 1, 0, 0);
     m_pCommandBuffer->DrawIndex(m_currentFrameIndex, m_vecIndices.size(), 1, 0, 0, 0);
     m_pCommandBuffer->EndRenderPass(m_currentFrameIndex);
@@ -128,4 +144,20 @@ void RHIContext::createSyncObject() {
 void RHIContext::cleanSwapChain() {
     m_vecFrameBuffer.clear();
     m_pSwapChain.reset();
+}
+
+void RHIContext::updateUniformBuffer() const {
+    static auto startTime = std::chrono::high_resolution_clock::now();
+    const auto currentTime = std::chrono::high_resolution_clock::now();
+    const float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+    const auto [width, height] = m_pSwapChain->GetSize();
+    GlobalUniformObject ubo {
+        .model = glm::rotate(glm::mat4(1.0f), deltaTime * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        .view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        .proj = glm::perspective(glm::radians(45.0f), width / static_cast<float>(height), 0.1f, 10.0f)
+    };
+    ubo.proj[1][1] *= -1.0f;
+
+    m_pUniformBuffer->UpdateBuffer(&ubo);
 }

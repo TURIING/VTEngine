@@ -91,7 +91,8 @@ struct RHIPipelineRasterizationState
         rasterizationState.polygonMode = polygonMode;
         rasterizationState.lineWidth = 1.0f;
         rasterizationState.cullMode = cullMode;
-        rasterizationState.frontFace = VK_FRONT_FACE_CLOCKWISE;
+        // rasterizationState.frontFace = VK_FRONT_FACE_CLOCKWISE;
+        rasterizationState.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         rasterizationState.depthBiasEnable = VK_FALSE;
         return rasterizationState;
     }

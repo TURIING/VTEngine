@@ -31,6 +31,7 @@ public:
     [[nodiscard]] VkPhysicalDevice GetPhysicalDeviceHandle() const { return m_pPhysicalDevice; }
     [[nodiscard]] VkDevice GetLogicalDeviceHandle() const { return m_pLogicalDevice; }
     [[nodiscard]] VkQueue GetGraphicsQueue() const { return m_pGraphicsQueue; }
+    [[nodiscard]] VkPhysicalDeviceProperties GetPhysicalGpuInfo() const { return m_physicalGpuInfo; }
     void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
     void CopyBuffer(const std::shared_ptr<RHICommandPool> &commandPool, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void Present(const std::shared_ptr<RHISemaphore>& waitSemaphore, const std::shared_ptr<RHISwapChain> &swapChain, uint32_t imageIndex) const;
@@ -51,6 +52,7 @@ private:
     VkDevice m_pLogicalDevice = nullptr;
     VkQueue m_pGraphicsQueue = nullptr;
     VkQueue m_pPresentQueue = nullptr;
+    VkPhysicalDeviceProperties m_physicalGpuInfo {};
 };
 
 

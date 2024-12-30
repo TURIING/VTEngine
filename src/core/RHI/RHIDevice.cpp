@@ -112,7 +112,10 @@ void RHIDevice::createPhysicalDevice() {
         }
     }
     LOG_ASSERT_INFO(m_pPhysicalDevice != VK_NULL_HANDLE, "failed to find a suitable GPU!");
-    LOG_INFO("Physical GPU found!");
+
+    vkGetPhysicalDeviceProperties(m_pPhysicalDevice, &m_physicalGpuInfo);
+
+    LOG_INFO("Physical GPU found, name: {}", m_physicalGpuInfo.deviceName);
 }
 
 void RHIDevice::createLogicalDevice() {

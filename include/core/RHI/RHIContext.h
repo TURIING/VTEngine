@@ -12,6 +12,10 @@
 #include "common/common.h"
 #include "core/common/Vertex.h"
 
+class RHIDescriptorSet;
+class RHIDescriptorSetLayout;
+class RHIDescriptorPool;
+class RHIUniformBuffer;
 class RHIFence;
 class RHISemaphore;
 class RHICommandBuffer;
@@ -26,6 +30,12 @@ class RHIInstance;
 class RHIVertexBuffer;
 class RHIIndexBuffer;
 
+struct GlobalUniformObject {
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
+};
+
 class RHIContext {
 public:
     explicit RHIContext(const PlatformWindowInfo &info);
@@ -36,6 +46,7 @@ private:
     bool prepareFrame(uint32_t &imageIndex);
     void createSyncObject();
     void cleanSwapChain();
+    void updateUniformBuffer() const;
 
 private:
     std::shared_ptr<RHIInstance> m_pInstance;
@@ -48,6 +59,10 @@ private:
     std::shared_ptr<RHICommandPool> m_pCommandPool;
     std::shared_ptr<RHIVertexBuffer> m_pVertexBuffer;
     std::shared_ptr<RHIIndexBuffer> m_pIndexBuffer;
+    std::shared_ptr<RHIUniformBuffer> m_pUniformBuffer;
+    std::shared_ptr<RHIDescriptorPool> m_pDescriptorPool;
+    std::shared_ptr<RHIDescriptorSetLayout> m_pDescriptorSetLayout;
+    std::shared_ptr<RHIDescriptorSet> m_pDescriptorSet;
     std::shared_ptr<RHICommandBuffer> m_pCommandBuffer;
     std::vector<std::shared_ptr<RHIFence>> m_vecInFlightFence;
     std::vector<std::shared_ptr<RHISemaphore>> m_vecImageAvailableSemaphore;

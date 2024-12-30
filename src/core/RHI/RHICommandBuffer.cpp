@@ -10,7 +10,7 @@
 #include <core/pipeline/ForwardPipeLine.h>
 #include <core/RHI/RHIDevice.h>
 #include <core/RHI/RHIFence.h>
-#include <core/RHI/rhiframebuffer.h>
+#include <core/RHI/RHIFrameBuffer.h>
 #include <core/RHI/RHIPipeLine.h>
 #include <core/RHI/RHIRenderPass.h>
 #include <core/RHI/RHISemaphore.h>
@@ -40,7 +40,7 @@ void RHICommandBuffer::Reset(uint32_t index) const {
     vkResetCommandBuffer(m_vecCommandBuffer[index], 0);
 }
 
-void RHICommandBuffer::BeginRecord(uint32_t currentframeIndex) {
+void RHICommandBuffer::BeginRecord(uint32_t currentframeIndex) const {
     VkCommandBufferBeginInfo beginInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
          .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
@@ -48,7 +48,7 @@ void RHICommandBuffer::BeginRecord(uint32_t currentframeIndex) {
     CALL_VK(vkBeginCommandBuffer(m_vecCommandBuffer[currentframeIndex], &beginInfo));
 }
 
-void RHICommandBuffer::EndRecord(uint32_t currentframeIndex) {
+void RHICommandBuffer::EndRecord(uint32_t currentframeIndex) const {
     CALL_VK(vkEndCommandBuffer(m_vecCommandBuffer[currentframeIndex]));
 }
 
@@ -86,7 +86,7 @@ void RHICommandBuffer::SetScissor(uint32_t currentFrameIndex, uint32_t firstScis
     vkCmdSetScissor(m_vecCommandBuffer[currentFrameIndex], firstScissorIndex, scissorCount, &scissor);
 }
 
-void RHICommandBuffer::Draw(uint32_t currentFrameIndex, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertexIndex, uint32_t firstInstanceIndex) {
+void RHICommandBuffer::Draw(uint32_t currentFrameIndex, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertexIndex, uint32_t firstInstanceIndex) const {
     vkCmdDraw(m_vecCommandBuffer[currentFrameIndex], vertexCount, instanceCount, firstVertexIndex, firstInstanceIndex);
 }
 
@@ -108,15 +108,19 @@ void RHICommandBuffer::Submit(uint32_t currentFrameIndex, const std::shared_ptr<
     CALL_VK(vkQueueSubmit(m_pDevice->GetGraphicsQueue(), 1, &submitInfo, inFightFence->GetHandle()));
 }
 
-void RHICommandBuffer::BindVertexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIVertexBuffer> &buffer, VkDeviceSize *offset, uint32_t firstBindingIndex, uint32_t bindingCount) {
+void RHICommandBuffer::BindVertexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIVertexBuffer> &buffer, VkDeviceSize *offset, uint32_t firstBindingIndex, uint32_t bindingCount) const {
     VkBuffer vertexBuffers[] = { buffer->GetHandle() };
     vkCmdBindVertexBuffers(m_vecCommandBuffer[currentFrameIndex], firstBindingIndex, bindingCount, vertexBuffers, offset);
 }
 
-void RHICommandBuffer::BindIndexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIIndexBuffer> &indexBuffer, VkDeviceSize offset, VkIndexType indexType) {
+void RHICommandBuffer::BindIndexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIIndexBuffer> &indexBuffer, VkDeviceSize offset, VkIndexType indexType) const {
     vkCmdBindIndexBuffer(m_vecCommandBuffer[currentFrameIndex], indexBuffer->GetHandle(), offset, indexType);
 }
 
-void RHICommandBuffer::DrawIndex(uint32_t currentFrameIndex, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance) {
+void RHICommandBuffer::BindDescriptorSets(uint32_t currentFrameIndex, VkPipelineBindPoint bindPoint, VkPipelineLayout layout, const std::vector<VkDescriptorSet> &descriptorSets, uint32_t firstSetIndex) const {
+    vkCmdBindDescriptorSets(m_vecCommandBuffer[currentFrameIndex], bindPoint, layout, firstSetIndex, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+}
+
+void RHICommandBuffer::DrawIndex(uint32_t currentFrameIndex, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance) const {
     vkCmdDrawIndexed(m_vecCommandBuffer[currentFrameIndex], indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }

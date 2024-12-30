@@ -13,8 +13,9 @@
 #include "core/RHI/RHIPipeLineState.h"
 #include <core/RHI/RHIShaderModule.h>
 #include "core/common/Vertex.h"
+#include "core/RHI/RHIDescriptorSetLayout.h"
 
-ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHIRenderPass> &renderPass): m_pDevice(device){
+ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHIRenderPass> &renderPass, const std::shared_ptr<RHIDescriptorSetLayout>& descriptorSetLayout): m_pDevice(device){
     RHIShaderModule vertexShaderModule(m_pDevice, "shader/triangle/vert.spv");
     RHIShaderModule fragmentShaderModule(m_pDevice, "shader/triangle/frag.spv");
 
@@ -31,13 +32,15 @@ ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const
     RHIPipelineInputAssemblyState inputAssemblyState;
     RHIPipelineViewportState viewportState;
     RHIPipelineRasterizationState rasterizationState;
-    RHIPipelineMultisampleState multisampleState;
+    RHIPipelineMultisampleState multiSampleState;
     RHIPipelineColorBlendState colorBlendState;
     RHIPipelineDynamicState dynamicState;
 
+    const auto descriptorLayout = descriptorSetLayout->GetHandle();
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = 0,
+        .setLayoutCount = 1,
+        .pSetLayouts = &descriptorLayout,
         .pushConstantRangeCount = 0,
     };
     m_pPipelineLayout = std::make_shared<RHIPipeLineLayout>(m_pDevice, pipelineLayoutCreateInfo);
@@ -51,7 +54,7 @@ ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const
         .inputAssemblyState = inputAssemblyState,
         .viewportState = viewportState,
         .rasterizationState = rasterizationState,
-        .multiSampleState = multisampleState,
+        .multiSampleState = multiSampleState,
         .colorBlendState = colorBlendState,
         .dynamicState = dynamicState,
         .subpassIndex = 0

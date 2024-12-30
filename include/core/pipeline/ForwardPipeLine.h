@@ -11,16 +11,19 @@
 
 #include <core/RHI/RHIPipeLine.h>
 #include "common/common.h"
+#include "core/RHI/RHIPipeLineLayout.h"
 
+class RHIDescriptorSetLayout;
 class RHIPipeLineLayout;
 class RHIRenderPass;
 class RHIDevice;
 
 class ForwardPipeLine final{
 public:
-    ForwardPipeLine(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass);
+    ForwardPipeLine(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIDescriptorSetLayout>& descriptorSetLayout);
     ~ForwardPipeLine();
     [[nodiscard]] VkPipeline GetHandle() const { return m_pPipeline->GetHandle(); }
+    [[nodiscard]] VkPipelineLayout GetPipelineLayout() const { return m_pPipelineLayout->GetHandle(); }
 
 private:
     std::shared_ptr<RHIPipeLineLayout> m_pPipelineLayout;
