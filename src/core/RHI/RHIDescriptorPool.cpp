@@ -6,7 +6,7 @@
 
 #include "core/RHI/RHIDevice.h"
 
-constexpr int DESCRIPTOR_POOL_MAX_SET_COUNT = 100;
+constexpr uint32_t DESCRIPTOR_POOL_MAX_SET_COUNT = 100;
 
 RHIDescriptorPool::RHIDescriptorPool(const std::shared_ptr<RHIDevice>& device): m_pDevice(device) {
     VkDescriptorPoolSize poolSize {
@@ -16,9 +16,9 @@ RHIDescriptorPool::RHIDescriptorPool(const std::shared_ptr<RHIDevice>& device): 
 
     const VkDescriptorPoolCreateInfo poolCreateInfo {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+        .maxSets = DESCRIPTOR_POOL_MAX_SET_COUNT,
         .poolSizeCount = 1,
         .pPoolSizes = &poolSize,
-        .maxSets = DESCRIPTOR_POOL_MAX_SET_COUNT,
     };
     CALL_VK(vkCreateDescriptorPool(m_pDevice->GetLogicalDeviceHandle(), &poolCreateInfo, nullptr, &m_pDescriptorPool));
     LOG_INFO("Created descriptor pool");

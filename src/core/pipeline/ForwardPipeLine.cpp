@@ -16,8 +16,8 @@
 #include "core/RHI/RHIDescriptorSetLayout.h"
 
 ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHIRenderPass> &renderPass, const std::shared_ptr<RHIDescriptorSetLayout>& descriptorSetLayout): m_pDevice(device){
-    RHIShaderModule vertexShaderModule(m_pDevice, "/Users/turiing/VTEngine/bin/shader/triangle/vert.spv");
-    RHIShaderModule fragmentShaderModule(m_pDevice, "/Users/turiing/VTEngine/bin/shader/triangle/frag.spv");
+    RHIShaderModule vertexShaderModule(m_pDevice, "shader/triangle/vert.spv");
+    RHIShaderModule fragmentShaderModule(m_pDevice, "shader/triangle/frag.spv");
 
     RHIPipelineVertexShaderStage vertexShaderStage;
     vertexShaderStage.shaderModule = vertexShaderModule.GetHandle();

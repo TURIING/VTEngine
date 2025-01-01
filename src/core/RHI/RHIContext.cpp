@@ -56,14 +56,11 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
 
     m_pDescriptorPool = std::make_shared<RHIDescriptorPool>(m_pDevice);
     std::vector<VkDescriptorSetLayout> vecDescriptorSetLayouts(MAX_FRAME_IN_FLIGHT, m_pDescriptorSetLayout->GetHandle());
-    m_pDescriptorSet = std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, vecDescriptorSetLayouts);
     for(auto i = 0; i < MAX_FRAME_IN_FLIGHT; i++) {
         m_vecUniformBuffer.emplace_back(std::make_shared<RHIUniformBuffer>(m_pDevice, sizeof(GlobalUniformObject)));
-        m_pDescriptorSet->UpdateUniformBuffer(m_vecUniformBuffer[i], i, 0);
-        // m_vecDescriptorSet.emplace_back(std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, m_pDescriptorSetLayout));
-        // m_vecDescriptorSet[i]->UpdateUniformBuffer(m_vecUniformBuffer[i], 0);
+        m_vecDescriptorSet.emplace_back(std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, m_pDescriptorSetLayout));
+        m_vecDescriptorSet[i]->UpdateUniformBuffer(m_vecUniformBuffer[i], 0);
     }
-
 }
 
 void RHIContext::Render() {
@@ -94,12 +91,11 @@ void RHIContext::Render() {
     };
 
     VkDeviceSize offset[] = { 0 };
-    const std::vector<VkDescriptorSet> vecDescriptorSets(1, m_pDescriptorSet->GetHandle(m_currentFrameIndex));
+    const std::vector<VkDescriptorSet> vecDescriptorSets(1, m_vecDescriptorSet[m_currentFrameIndex]->GetHandle());
     m_pCommandBuffer->SetScissor(m_currentFrameIndex, 0, 1, scissor);
     m_pCommandBuffer->BindVertexBuffer(m_currentFrameIndex, m_pVertexBuffer, offset, 0, 1);
     m_pCommandBuffer->BindIndexBuffer(m_currentFrameIndex, m_pIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
     m_pCommandBuffer->BindDescriptorSets(m_currentFrameIndex, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pForwardPipeLine->GetPipelineLayout(), vecDescriptorSets, 0);
-//    m_pCommandBuffer->Draw(m_currentFrameIndex, m_vecVertices.size(), 1, 0, 0);
     m_pCommandBuffer->DrawIndex(m_currentFrameIndex, m_vecIndices.size(), 1, 0, 0, 0);
     m_pCommandBuffer->EndRenderPass(m_currentFrameIndex);
     m_pCommandBuffer->EndRecord(m_currentFrameIndex);
