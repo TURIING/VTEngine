@@ -11,6 +11,7 @@ RHIUniformBuffer::RHIUniformBuffer(const std::shared_ptr<RHIDevice> &device, siz
         .offset = 0,
         .range = m_bufferSize
     };
+    LOG_INFO("Created uniform buffer with size {}", m_bufferSize);
 }
 
 RHIUniformBuffer::~RHIUniformBuffer() {

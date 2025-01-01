@@ -54,10 +54,16 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
     m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_pCommandPool, m_vecVertices);
     m_pIndexBuffer = std::make_shared<RHIIndexBuffer>(m_pDevice, m_pCommandPool, m_vecIndices);
 
-    m_pUniformBuffer = std::make_shared<RHIUniformBuffer>(m_pDevice, sizeof(GlobalUniformObject));
     m_pDescriptorPool = std::make_shared<RHIDescriptorPool>(m_pDevice);
-    m_pDescriptorSet = std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, m_pDescriptorSetLayout);
-    m_pDescriptorSet->UpdateUniformBuffer(m_pUniformBuffer, 0);
+    std::vector<VkDescriptorSetLayout> vecDescriptorSetLayouts(MAX_FRAME_IN_FLIGHT, m_pDescriptorSetLayout->GetHandle());
+    m_pDescriptorSet = std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, vecDescriptorSetLayouts);
+    for(auto i = 0; i < MAX_FRAME_IN_FLIGHT; i++) {
+        m_vecUniformBuffer.emplace_back(std::make_shared<RHIUniformBuffer>(m_pDevice, sizeof(GlobalUniformObject)));
+        m_pDescriptorSet->UpdateUniformBuffer(m_vecUniformBuffer[i], i, 0);
+        // m_vecDescriptorSet.emplace_back(std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, m_pDescriptorSetLayout));
+        // m_vecDescriptorSet[i]->UpdateUniformBuffer(m_vecUniformBuffer[i], 0);
+    }
+
 }
 
 void RHIContext::Render() {
@@ -88,7 +94,7 @@ void RHIContext::Render() {
     };
 
     VkDeviceSize offset[] = { 0 };
-    std::vector<VkDescriptorSet> vecDescriptorSets = { m_pDescriptorSet->GetHandle() };
+    const std::vector<VkDescriptorSet> vecDescriptorSets(1, m_pDescriptorSet->GetHandle(m_currentFrameIndex));
     m_pCommandBuffer->SetScissor(m_currentFrameIndex, 0, 1, scissor);
     m_pCommandBuffer->BindVertexBuffer(m_currentFrameIndex, m_pVertexBuffer, offset, 0, 1);
     m_pCommandBuffer->BindIndexBuffer(m_currentFrameIndex, m_pIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
@@ -159,5 +165,5 @@ void RHIContext::updateUniformBuffer() const {
     };
     ubo.proj[1][1] *= -1.0f;
 
-    m_pUniformBuffer->UpdateBuffer(&ubo);
+    m_vecUniformBuffer[m_currentFrameIndex]->UpdateBuffer(&ubo);
 }

@@ -59,9 +59,10 @@ private:
     std::shared_ptr<RHICommandPool> m_pCommandPool;
     std::shared_ptr<RHIVertexBuffer> m_pVertexBuffer;
     std::shared_ptr<RHIIndexBuffer> m_pIndexBuffer;
-    std::shared_ptr<RHIUniformBuffer> m_pUniformBuffer;
+    std::vector<std::shared_ptr<RHIUniformBuffer>> m_vecUniformBuffer;
     std::shared_ptr<RHIDescriptorPool> m_pDescriptorPool;
     std::shared_ptr<RHIDescriptorSetLayout> m_pDescriptorSetLayout;
+    // std::vector<std::shared_ptr<RHIDescriptorSet>> m_vecDescriptorSet;
     std::shared_ptr<RHIDescriptorSet> m_pDescriptorSet;
     std::shared_ptr<RHICommandBuffer> m_pCommandBuffer;
     std::vector<std::shared_ptr<RHIFence>> m_vecInFlightFence;
