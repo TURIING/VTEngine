@@ -24,6 +24,7 @@ MainWindow::MainWindow(const std::string &title, const Size &size, Application *
     connect(&m_timer, &QTimer::timeout, [this] {
         RenderRequestEvent renderRequestEvent;
         m_pApp->ProcessEvent(renderRequestEvent);
+        this->repaint();
     });
 }
 
@@ -46,8 +47,6 @@ void MainWindow::createSurfaceWindow() {
     m_pSurface->setSurfaceType(QSurface::VulkanSurface);
 #endif
     const auto surfaceWidget = this->createWindowContainer(m_pSurface, this);
-    surfaceWidget->setAttribute(Qt::WA_NativeWindow);
-    surfaceWidget->setAttribute(Qt::WA_DontCreateNativeAncestors);
 
     const auto layout = new QHBoxLayout(ui->pSurfaceWidget);
     layout->setContentsMargins(QMargins());
