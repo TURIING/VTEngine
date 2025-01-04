@@ -151,5 +151,12 @@ static std::vector<char> readFile(const std::string& filename) {
 
         return buffer;
 }
+static std::string GetFileExtension(const std::string& filename) {
+        const size_t dotPos = filename.rfind('.');
+        if (dotPos != std::string::npos) {
+                return filename.substr(dotPos + 1);
+        }
+        return ""; // 无扩展名
+}
 }
 #endif //UTILITY_H

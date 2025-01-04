@@ -12,10 +12,12 @@ class RHICommandPool;
 
 class RHISingleTimeCommandBuffer {
 public:
-     explicit RHISingleTimeCommandBuffer(RHIDevice *device, const std::shared_ptr<RHICommandPool> &commandPool);
-     ~RHISingleTimeCommandBuffer();
-     [[nodiscard]] VkCommandBuffer GetHandle() const { return m_pCommandBuffer; }
-     void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+    explicit RHISingleTimeCommandBuffer(RHIDevice *device, const std::shared_ptr<RHICommandPool> &commandPool);
+    ~RHISingleTimeCommandBuffer();
+    [[nodiscard]] VkCommandBuffer GetHandle() const { return m_pCommandBuffer; }
+    void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const;
+    void CopyImage(VkBuffer srcBuffer, VkImage dstImage, VkImageLayout imageLayout, uint32_t regionCount, const VkBufferImageCopy *regions) const;
+    void PipelineBarrier(VkPipelineStageFlags srcStageFlags, VkPipelineStageFlags dstStageFlags, VkImageMemoryBarrier &barrier) const;
 
 private:
     RHIDevice *m_pDevice = nullptr;

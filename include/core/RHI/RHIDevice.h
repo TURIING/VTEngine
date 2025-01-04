@@ -32,10 +32,11 @@ public:
     [[nodiscard]] VkDevice GetLogicalDeviceHandle() const { return m_pLogicalDevice; }
     [[nodiscard]] VkQueue GetGraphicsQueue() const { return m_pGraphicsQueue; }
     [[nodiscard]] VkPhysicalDeviceProperties GetPhysicalGpuInfo() const { return m_physicalGpuInfo; }
-    void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+    void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) const;
     void CopyBuffer(const std::shared_ptr<RHICommandPool> &commandPool, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void Present(const std::shared_ptr<RHISemaphore>& waitSemaphore, const std::shared_ptr<RHISwapChain> &swapChain, uint32_t imageIndex) const;
     void WaitIdle() const;
+    [[nodiscard]] uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
 private:
     [[nodiscard]] bool checkDeviceSupport(VkPhysicalDevice device) const;
@@ -43,7 +44,6 @@ private:
     [[nodiscard]] bool checkPresentSupport(VkPhysicalDevice device, uint32_t queueFamilyIndex) const;
     void createPhysicalDevice();
     void createLogicalDevice();
-    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 private:
     std::shared_ptr<RHIInstance> m_pInstance = nullptr;

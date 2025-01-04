@@ -9,8 +9,10 @@
 
 #include <core/RHI/RHIDevice.h>
 
+#include "utility/File.h"
+
 RHIShaderModule::RHIShaderModule(const std::shared_ptr<RHIDevice> &device, const std::string &shaderPath): m_pDevice(device) {
-    const auto shaderCode = Utility::readFile(shaderPath);
+    const auto shaderCode = File::FromStdString(shaderPath).GetShaderData();
 
     VkShaderModuleCreateInfo shaderModuleCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,

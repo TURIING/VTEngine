@@ -25,7 +25,9 @@
 #include "core/RHI/RHIDescriptorSetLayout.h"
 #include "core/RHI/RHIVertexBuffer.h"
 #include "core/RHI/RHIIndexBuffer.h"
+#include "core/RHI/RHITexture.h"
 #include "core/RHI/RHIUniformBuffer.h"
+#include "utility/File.h"
 
 constexpr int MAX_FRAME_IN_FLIGHT = 2;
 
@@ -35,7 +37,7 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
     m_pDevice = std::make_shared<RHIDevice>(m_pInstance, m_pSurface);
     m_pSwapChain = std::make_shared<RHISwapChain>(m_pInstance, m_pDevice, m_pSurface, info.size);
     m_pRenderPass = std::make_shared<ForwardPass>(m_pDevice, m_pSwapChain->GetColorFormat());
-    std::vector<RHIDescriptorType> vecTypes = { RHIDescriptorType::ConstantBuffer };
+    std::vector<RHIDescriptorType> vecTypes = { RHIDescriptorType::ConstantBuffer, RHIDescriptorType::Sampler };
     m_pDescriptorSetLayout = std::make_shared<RHIDescriptorSetLayout>(m_pDevice, vecTypes);
     m_pForwardPipeLine = std::make_shared<ForwardPipeLine>(m_pDevice, m_pRenderPass, m_pDescriptorSetLayout);
 
@@ -54,12 +56,15 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
     m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_pCommandPool, m_vecVertices);
     m_pIndexBuffer = std::make_shared<RHIIndexBuffer>(m_pDevice, m_pCommandPool, m_vecIndices);
 
+    m_pTexture = std::make_shared<RHITexture>(m_pDevice, m_pCommandPool, File::FromStdString("assets/images/container2.png"));
+
     m_pDescriptorPool = std::make_shared<RHIDescriptorPool>(m_pDevice);
     std::vector<VkDescriptorSetLayout> vecDescriptorSetLayouts(MAX_FRAME_IN_FLIGHT, m_pDescriptorSetLayout->GetHandle());
     for(auto i = 0; i < MAX_FRAME_IN_FLIGHT; i++) {
         m_vecUniformBuffer.emplace_back(std::make_shared<RHIUniformBuffer>(m_pDevice, sizeof(GlobalUniformObject)));
         m_vecDescriptorSet.emplace_back(std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, m_pDescriptorSetLayout));
         m_vecDescriptorSet[i]->UpdateUniformBuffer(m_vecUniformBuffer[i], 0);
+        m_vecDescriptorSet[i]->UpdateTextureImage(m_pTexture->GetDescriptorImageInfo(), 1);
     }
 }
 

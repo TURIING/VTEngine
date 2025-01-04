@@ -74,7 +74,10 @@ bool RHIDevice::checkDeviceSupport(VkPhysicalDevice device) const {
         isSwapChainAdequate = !swapChainSupportDetails.formats.empty() && !swapChainSupportDetails.presentModes.empty();
     }
 
-    return indices.isComplete() && extensionSupported && isSwapChainAdequate;
+    VkPhysicalDeviceFeatures supportFeatures;
+    vkGetPhysicalDeviceFeatures(device, &supportFeatures);
+
+    return indices.isComplete() && extensionSupported && isSwapChainAdequate && supportFeatures.samplerAnisotropy;
 }
 
 bool RHIDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
@@ -135,7 +138,9 @@ void RHIDevice::createLogicalDevice() {
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
-    VkPhysicalDeviceFeatures deviceFeatures{};
+    VkPhysicalDeviceFeatures deviceFeatures {
+        .samplerAnisotropy = VK_TRUE,
+    };
     VkDeviceCreateInfo createInfo {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         .pNext = nullptr,
@@ -160,7 +165,7 @@ void RHIDevice::createLogicalDevice() {
     }
 }
 
-void RHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
+void RHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) const {
     // 创建缓冲
     VkBufferCreateInfo bufferInfo {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -178,14 +183,14 @@ void RHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
     VkMemoryAllocateInfo allocateInfo {
         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
         .allocationSize = memoryRequirements.size,
-        .memoryTypeIndex = findMemoryType(memoryRequirements.memoryTypeBits, properties)
+        .memoryTypeIndex = this->FindMemoryType(memoryRequirements.memoryTypeBits, properties)
     };
     CALL_VK(vkAllocateMemory(m_pLogicalDevice, &allocateInfo, nullptr, &bufferMemory));
 
     vkBindBufferMemory(m_pLogicalDevice, buffer, bufferMemory, 0);
 }
 
-uint32_t RHIDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+uint32_t RHIDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const {
     // 查询物理设备可用的内存类型
     VkPhysicalDeviceMemoryProperties memoryProperties;
     vkGetPhysicalDeviceMemoryProperties(m_pPhysicalDevice, &memoryProperties);

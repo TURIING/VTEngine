@@ -36,9 +36,17 @@ RHISingleTimeCommandBuffer::~RHISingleTimeCommandBuffer() {
     vkFreeCommandBuffers(m_pDevice->GetLogicalDeviceHandle(), m_pCommandPool->GetHandle(), 1, &m_pCommandBuffer);
 }
 
-void RHISingleTimeCommandBuffer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-    VkBufferCopy copyRegion {
+void RHISingleTimeCommandBuffer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const {
+    const VkBufferCopy copyRegion {
         .size = size,
     };
     vkCmdCopyBuffer(m_pCommandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+}
+
+void RHISingleTimeCommandBuffer::CopyImage(VkBuffer srcBuffer, VkImage dstImage, VkImageLayout imageLayout, uint32_t regionCount, const VkBufferImageCopy* regions) const {
+    vkCmdCopyBufferToImage(m_pCommandBuffer, srcBuffer, dstImage, imageLayout, regionCount, regions);
+}
+
+void RHISingleTimeCommandBuffer::PipelineBarrier(VkPipelineStageFlags srcStageFlags, VkPipelineStageFlags dstStageFlags, VkImageMemoryBarrier& barrier) const {
+    vkCmdPipelineBarrier(m_pCommandBuffer, srcStageFlags, dstStageFlags, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 }

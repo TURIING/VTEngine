@@ -18,6 +18,7 @@ public:
     ~RHIDescriptorSet();
     [[nodiscard]] VkDescriptorSet GetHandle() const { return m_pDescriptorSet; }
     void UpdateUniformBuffer(const std::shared_ptr<RHIUniformBuffer> &uniformBuffer, uint32_t bindingIndex) const;
+    void UpdateTextureImage(VkDescriptorImageInfo imageInfo, uint32_t bindingIndex) const;
 
 private:
     std::shared_ptr<RHIDevice> m_pDevice;

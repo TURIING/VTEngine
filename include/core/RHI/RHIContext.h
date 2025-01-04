@@ -12,6 +12,7 @@
 #include "common/common.h"
 #include "core/common/Vertex.h"
 
+class RHITexture;
 class RHIDescriptorSet;
 class RHIDescriptorSetLayout;
 class RHIDescriptorPool;
@@ -63,6 +64,7 @@ private:
     std::shared_ptr<RHIDescriptorPool> m_pDescriptorPool;
     std::shared_ptr<RHIDescriptorSetLayout> m_pDescriptorSetLayout;
     std::vector<std::shared_ptr<RHIDescriptorSet>> m_vecDescriptorSet;
+    std::shared_ptr<RHITexture> m_pTexture;
     std::shared_ptr<RHICommandBuffer> m_pCommandBuffer;
     std::vector<std::shared_ptr<RHIFence>> m_vecInFlightFence;
     std::vector<std::shared_ptr<RHISemaphore>> m_vecImageAvailableSemaphore;
@@ -70,10 +72,10 @@ private:
     Size m_size;
     uint32_t m_currentFrameIndex = 0;
     const std::vector<Vertex> m_vecVertices = {
-            { { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-            { { 0.5f,  -0.5f, 0.0f }, { 0.0, 1.0, 0.0 } },
-            { { 0.5f,  0.5f, 0.0f }, { 0.0, 0.0, 1.0 } },
-            { { -0.5f, 0.5f, 0.0f }, { 1.0, 1.0, 1.0} },
+            { { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } },
+            { { 0.5f,  -0.5f, 0.0f }, { 0.0, 1.0, 0.0 }, { 0.0f, 0.0f } },
+            { { 0.5f,  0.5f, 0.0f }, { 0.0, 0.0, 1.0 }, { 0.0f, 1.0f } },
+            { { -0.5f, 0.5f, 0.0f }, { 1.0, 1.0, 1.0}, { 1.0f, 1.0f } },
     };
     const std::vector<uint32_t> m_vecIndices = { 0, 1, 2, 2, 3, 0 };
 

@@ -36,6 +36,11 @@ struct Point {
     int y = 0;
 };
 
+struct ImageInfo {
+    unsigned char *data = nullptr;
+    Size size;
+};
+
 /************************************************* Marco ************************************************************/
 #define BIT(x) (1 << (x))
 

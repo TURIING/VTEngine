@@ -34,3 +34,9 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     include(${CMAKE_SOURCE_DIR}/cmake/macos.cmake)
 endif ()
 
+# 复制资源文件夹到程序目录
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+    COMMENT "Copying directory ${SOURCE_FOLDER} to ${DESTINATION_FOLDER}"
+)
