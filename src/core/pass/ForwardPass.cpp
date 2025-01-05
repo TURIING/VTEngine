@@ -9,7 +9,7 @@
 
 #include <core/RHI/RHIDevice.h>
 
-ForwardPass::ForwardPass(const std::shared_ptr<RHIDevice> &device, VkFormat colorFormat): RHIRenderPass(device) {
+ForwardPass::ForwardPass(const std::shared_ptr<RHIDevice> &device, VkFormat colorFormat, VkFormat depthFormat): RHIRenderPass(device) {
     VkAttachmentDescription colorAttachment = {
         .format = colorFormat,
         .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -32,10 +32,27 @@ ForwardPass::ForwardPass(const std::shared_ptr<RHIDevice> &device, VkFormat colo
         .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL                          // 用于指定进行子流程时引用的附着使用的布局方式，Vulkan会在子流程开始时自动将引用的附着转换到layout成员变量指定的图像布局
     };
 
+    VkAttachmentDescription depthAttachment = {
+        .format = depthFormat,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+    };
+
+    VkAttachmentReference depthAttachmentRef = {
+        .attachment = 1,
+        .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+    };
+
     VkSubpassDescription subpass = {
         .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,                       // Vulkan在未来也可能会支持计算子流程，所以，我们还需要显式地指定这是一个图形渲染的子流程
         .colorAttachmentCount = 1,
-        .pColorAttachments = &colorAttachmentRef
+        .pColorAttachments = &colorAttachmentRef,
+        .pDepthStencilAttachment = &depthAttachmentRef,
     };
 
     VkSubpassDependency dependency = {
@@ -47,10 +64,11 @@ ForwardPass::ForwardPass(const std::shared_ptr<RHIDevice> &device, VkFormat colo
         .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
     };
 
+    std::vector<VkAttachmentDescription> attachments = { colorAttachment, depthAttachment };
     const VkRenderPassCreateInfo renderPassInfo = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-        .attachmentCount = 1,
-        .pAttachments = &colorAttachment,
+        .attachmentCount = static_cast<uint32_t>(attachments.size()),
+        .pAttachments = attachments.data(),
         .subpassCount = 1,
         .pSubpasses = &subpass,
         .dependencyCount = 1,

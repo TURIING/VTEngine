@@ -53,8 +53,9 @@ void RHICommandBuffer::EndRecord(uint32_t currentframeIndex) const {
 }
 
 void RHICommandBuffer::BeginRenderPass(const std::shared_ptr<RHIRenderPass> &renderPass, const std::shared_ptr<RHIFrameBuffer> &framebuffer, uint32_t currentFrame, Size size) const {
-    std::vector<VkClearValue> clearValues(1);
+    std::vector<VkClearValue> clearValues(2);
     clearValues[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
+    clearValues[1].depthStencil = { 1.0f, 0 };
 
     VkRenderPassBeginInfo renderPassInfo = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -64,7 +65,7 @@ void RHICommandBuffer::BeginRenderPass(const std::shared_ptr<RHIRenderPass> &ren
             .offset = { 0, 0 },
             .extent = { size.width, size.height }
         },
-        .clearValueCount = 1,
+        .clearValueCount = static_cast<uint32_t>(clearValues.size()),
         .pClearValues = clearValues.data(),
     };
     vkCmdBeginRenderPass(m_vecCommandBuffer[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);

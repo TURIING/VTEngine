@@ -17,6 +17,7 @@ class RHIDevice;
 class RHIFrameBuffer {
 public:
     RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, VkImageView colorImageView, Size size);
+    RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, VkImageView colorImageView, VkImageView depthImageView, Size size);
     ~RHIFrameBuffer();
     [[nodiscard]] VkFramebuffer GetHandle() const { return m_pFramebuffer; }
 

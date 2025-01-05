@@ -16,7 +16,7 @@ class RHIDevice;
 
 class ForwardPass: public RHIRenderPass{
 public:
-    ForwardPass(const std::shared_ptr<RHIDevice>& device, VkFormat colorFormat);
+    ForwardPass(const std::shared_ptr<RHIDevice>& device, VkFormat colorFormat, VkFormat depthFormat);
     ~ForwardPass() = default;
 };
 

@@ -24,12 +24,13 @@ void RHIPipeLine::createPipeline(RHIPipelineState &pipeLineState) {
         pipeLineState.fragmentShaderStage.GetCreateInfo()
     };
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = pipeLineState.vertexInputState.GetCreateInfo();
-    VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = pipeLineState.inputAssemblyState.GetCreateInfo();
-    VkPipelineViewportStateCreateInfo viewportStateCreateInfo = pipeLineState.viewportState.GetCreateInfo();
+    VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = RHIPipelineInputAssemblyState::GetCreateInfo();
+    VkPipelineViewportStateCreateInfo viewportStateCreateInfo = RHIPipelineViewportState::GetCreateInfo();
     VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = pipeLineState.rasterizationState.GetCreateInfo();
-    VkPipelineMultisampleStateCreateInfo multisampleStateCreateInfo = pipeLineState.multiSampleState.GetCreateInfo();
+    VkPipelineMultisampleStateCreateInfo multiSampleStateCreateInfo = pipeLineState.multiSampleState.GetCreateInfo();
     VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo = pipeLineState.colorBlendState.GetCreateInfo();
     VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = pipeLineState.dynamicState.GetCreateInfo();
+    VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = pipeLineState.depthStencilState.GetCreateInfo();
 
     VkGraphicsPipelineCreateInfo pipelineCreateInfo {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -39,12 +40,13 @@ void RHIPipeLine::createPipeline(RHIPipelineState &pipeLineState) {
         .pInputAssemblyState = &inputAssemblyInfo,
         .pViewportState = &viewportStateCreateInfo,
         .pRasterizationState = &rasterizationStateCreateInfo,
-        .pMultisampleState = &multisampleStateCreateInfo,
+        .pMultisampleState = &multiSampleStateCreateInfo,
+        .pDepthStencilState = &depthStencilStateCreateInfo,
         .pColorBlendState = &colorBlendStateCreateInfo,
         .pDynamicState = &dynamicStateCreateInfo,
         .layout = pipeLineState.pipeLineLayout,
         .renderPass = pipeLineState.renderPass,
-        .subpass = pipeLineState.subpassIndex,
+        .subpass = pipeLineState.subPassIndex,
         .basePipelineHandle = VK_NULL_HANDLE,
     };
     CALL_VK(vkCreateGraphicsPipelines(m_pDevice->GetLogicalDeviceHandle(), nullptr, 1, &pipelineCreateInfo, nullptr, &m_pPipeLine));

@@ -20,6 +20,7 @@
 #include <core/RHI/RHIInstance.h>
 #include <core/RHI/RHISemaphore.h>
 
+#include "core/RHI/RHIDepthResource.h"
 #include "core/RHI/RHIDescriptorPool.h"
 #include "core/RHI/RHIDescriptorSet.h"
 #include "core/RHI/RHIDescriptorSetLayout.h"
@@ -36,18 +37,21 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
     m_pSurface = std::make_shared<RHISurface>(m_pInstance, info.handle);
     m_pDevice = std::make_shared<RHIDevice>(m_pInstance, m_pSurface);
     m_pSwapChain = std::make_shared<RHISwapChain>(m_pInstance, m_pDevice, m_pSurface, info.size);
-    m_pRenderPass = std::make_shared<ForwardPass>(m_pDevice, m_pSwapChain->GetColorFormat());
+
+    const auto queueFamilyIndices = QueueFamilyIndices::GetQueueFamilyIndices(m_pDevice->GetPhysicalDeviceHandle(), m_pSurface->GetHandle());
+    m_pCommandPool = std::make_shared<RHICommandPool>(m_pDevice, queueFamilyIndices.graphicsFamily.value());
+
+    const auto size = m_pSwapChain->GetSize();
+    m_pDepthResource = std::make_shared<RHIDepthResource>(m_pDevice, m_pCommandPool, size);
+
+    m_pRenderPass = std::make_shared<ForwardPass>(m_pDevice, m_pSwapChain->GetColorFormat(), m_pDevice->GetDepthFormatDetail());
     std::vector<RHIDescriptorType> vecTypes = { RHIDescriptorType::ConstantBuffer, RHIDescriptorType::Sampler };
     m_pDescriptorSetLayout = std::make_shared<RHIDescriptorSetLayout>(m_pDevice, vecTypes);
     m_pForwardPipeLine = std::make_shared<ForwardPipeLine>(m_pDevice, m_pRenderPass, m_pDescriptorSetLayout);
 
-    const auto size = m_pSwapChain->GetSize();
     for(auto i = 0; i < m_pSwapChain->GetImageCount(); i++) {
-        m_vecFrameBuffer.emplace_back(std::make_shared<RHIFrameBuffer>(m_pDevice, m_pRenderPass, m_pSwapChain->GetImageView(i), size));
+        m_vecFrameBuffer.emplace_back(std::make_shared<RHIFrameBuffer>(m_pDevice, m_pRenderPass, m_pSwapChain->GetImageView(i), m_pDepthResource->GetImageView(), size));
     }
-
-    const auto queueFamilyIndices = QueueFamilyIndices::GetQueueFamilyIndices(m_pDevice->GetPhysicalDeviceHandle(), m_pSurface->GetHandle());
-    m_pCommandPool = std::make_shared<RHICommandPool>(m_pDevice, queueFamilyIndices.graphicsFamily.value());
 
     m_pCommandBuffer = std::make_shared<RHICommandBuffer>(m_pDevice, m_pCommandPool, MAX_FRAME_IN_FLIGHT);
 
@@ -149,6 +153,7 @@ void RHIContext::createSyncObject() {
 }
 
 void RHIContext::cleanSwapChain() {
+    m_pDepthResource.reset();
     m_vecFrameBuffer.clear();
     m_pSwapChain.reset();
 }

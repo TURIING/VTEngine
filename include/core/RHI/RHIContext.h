@@ -12,6 +12,7 @@
 #include "common/common.h"
 #include "core/common/Vertex.h"
 
+class RHIDepthResource;
 class RHITexture;
 class RHIDescriptorSet;
 class RHIDescriptorSetLayout;
@@ -54,6 +55,7 @@ private:
     std::shared_ptr<RHISurface> m_pSurface;
     std::shared_ptr<RHIDevice> m_pDevice;
     std::shared_ptr<RHISwapChain> m_pSwapChain;
+    std::shared_ptr<RHIDepthResource> m_pDepthResource;
     std::shared_ptr<RHIRenderPass> m_pRenderPass;
     std::shared_ptr<ForwardPipeLine> m_pForwardPipeLine;
     std::vector<std::shared_ptr<RHIFrameBuffer>> m_vecFrameBuffer;

@@ -32,9 +32,10 @@ ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const
     RHIPipelineInputAssemblyState inputAssemblyState;
     RHIPipelineViewportState viewportState;
     RHIPipelineRasterizationState rasterizationState;
-    RHIPipelineMultisampleState multiSampleState;
+    RHIPipelineMultiSampleState multiSampleState;
     RHIPipelineColorBlendState colorBlendState;
     RHIPipelineDynamicState dynamicState;
+    RHIPipelineDepthStencilState depthStencilState;
 
     const auto descriptorLayout = descriptorSetLayout->GetHandle();
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {
@@ -55,9 +56,10 @@ ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const
         .viewportState = viewportState,
         .rasterizationState = rasterizationState,
         .multiSampleState = multiSampleState,
+        .depthStencilState = depthStencilState,
         .colorBlendState = colorBlendState,
         .dynamicState = dynamicState,
-        .subpassIndex = 0
+        .subPassIndex = 0
     };
     m_pPipeline = std::make_shared<RHIPipeLine>(m_pDevice, pipelineState);
 }

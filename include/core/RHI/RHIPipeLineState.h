@@ -67,6 +67,27 @@ struct RHIPipelineInputAssemblyState
     }
 };
 
+struct RHIPipelineDepthStencilState {
+    bool depthTestEnable = true;
+    bool depthWriteEnable = true;
+    VkCompareOp depthOpFunc = VK_COMPARE_OP_LESS;
+    bool stencilTestEnable = false;
+
+    [[nodiscard]] VkPipelineDepthStencilStateCreateInfo GetCreateInfo() const {
+        const VkPipelineDepthStencilStateCreateInfo depthStencilState{
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+            .depthTestEnable = depthTestEnable ? VK_TRUE : VK_FALSE,
+            .depthWriteEnable = depthWriteEnable ? VK_TRUE : VK_FALSE,
+            .depthCompareOp = depthOpFunc,
+            .depthBoundsTestEnable = VK_FALSE,
+            .minDepthBounds = 0.0f,
+            .maxDepthBounds = 1.0f,
+            .stencilTestEnable = stencilTestEnable ? VK_TRUE : VK_FALSE,
+        };
+        return depthStencilState;
+    }
+};
+
 struct RHIPipelineViewportState
 {
     static VkPipelineViewportStateCreateInfo GetCreateInfo()
@@ -98,7 +119,7 @@ struct RHIPipelineRasterizationState
     }
 };
 
-struct RHIPipelineMultisampleState
+struct RHIPipelineMultiSampleState
 {
     bool enable = false;
     VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -114,7 +135,7 @@ struct RHIPipelineMultisampleState
 struct RHIPipelineColorBlendState
 {
     bool enable = false;
-    VkPipelineColorBlendAttachmentState colorBlendAttachmentState;
+    VkPipelineColorBlendAttachmentState colorBlendAttachmentState {};
     // TODO: translucency render
     [[nodiscard]] VkPipelineColorBlendStateCreateInfo GetCreateInfo()
     {
@@ -161,17 +182,15 @@ struct RHIPipelineState
     RHIPipelineFragmentShaderStage fragmentShaderStage{};
     VkPipelineLayout pipeLineLayout{};
     VkRenderPass renderPass{};
-    // TODO: constant state
     RHIPipelineVertexInputState vertexInputState{};
     RHIPipelineInputAssemblyState inputAssemblyState{};
-    // TODO: tessellation state
     RHIPipelineViewportState viewportState{};
     RHIPipelineRasterizationState rasterizationState{};
-    RHIPipelineMultisampleState multiSampleState{};
-    // RHIPipelineDepthStencilState depthStencilState{};
+    RHIPipelineMultiSampleState multiSampleState{};
+    RHIPipelineDepthStencilState depthStencilState{};
     RHIPipelineColorBlendState colorBlendState{};
     RHIPipelineDynamicState dynamicState{};
-    uint32_t subpassIndex{ 0 };
+    uint32_t subPassIndex{ 0 };
 };
 
 #endif //RHIPIPELINESTATE_H

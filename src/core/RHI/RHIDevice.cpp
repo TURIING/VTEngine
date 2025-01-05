@@ -165,6 +165,21 @@ void RHIDevice::createLogicalDevice() {
     }
 }
 
+VkFormat RHIDevice::GetDepthFormatDetail() const {
+    VkFormat depthFormat = VK_FORMAT_UNDEFINED;
+    constexpr VkFormat formats[] = { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
+    for(const auto format : formats) {
+        VkFormatProperties formatProperties;
+        vkGetPhysicalDeviceFormatProperties(m_pPhysicalDevice, format, &formatProperties);
+
+        if(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) {
+            depthFormat = format;
+            break;
+        }
+    }
+    return depthFormat;
+}
+
 void RHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) const {
     // 创建缓冲
     VkBufferCreateInfo bufferInfo {
@@ -180,7 +195,7 @@ void RHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
     vkGetBufferMemoryRequirements(m_pLogicalDevice, buffer, &memoryRequirements);
 
     // 分配内存
-    VkMemoryAllocateInfo allocateInfo {
+    const VkMemoryAllocateInfo allocateInfo {
         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
         .allocationSize = memoryRequirements.size,
         .memoryTypeIndex = this->FindMemoryType(memoryRequirements.memoryTypeBits, properties)
