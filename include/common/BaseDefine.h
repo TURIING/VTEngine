@@ -50,6 +50,9 @@ constexpr auto APP_NAME = "VTEngine";
 constexpr Version APP_VERSION = { 1, 0, 0 };
 constexpr Size WINDOW_SIZE = { 1200, 1000 };
 inline constexpr float FRAME_TIME = 1/60.0;                                                                         // 每秒里每帧的耗时
+constexpr std::string SHADER_DIR = "shader/";
+constexpr std::string TEXTURE_DIR = "assets/images/";
+constexpr std::string MODEL_DIR = "assets/model/";
 
 constexpr bool ENABLE_VALIDATION_LAYERS = true;                                                                     // 是否开启校验层
 const std::vector<const char*> REQUIRE_VALIDATION_LAYERS = { "VK_LAYER_KHRONOS_validation" };

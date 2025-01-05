@@ -11,11 +11,12 @@
 
 #include "common/common.h"
 
+class File;
 class RHIDevice;
 
 class RHIShaderModule {
 public:
-    RHIShaderModule(const std::shared_ptr<RHIDevice>& device, const std::string &shaderPath);
+    RHIShaderModule(const std::shared_ptr<RHIDevice>& device, File &&file);
     ~RHIShaderModule();
     [[nodiscard]] VkShaderModule GetHandle() const { return m_pShaderModule; }
 

@@ -14,10 +14,11 @@
 #include <core/RHI/RHIShaderModule.h>
 #include "core/common/Vertex.h"
 #include "core/RHI/RHIDescriptorSetLayout.h"
+#include "utility/File.h"
 
 ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHIRenderPass> &renderPass, const std::shared_ptr<RHIDescriptorSetLayout>& descriptorSetLayout): m_pDevice(device){
-    RHIShaderModule vertexShaderModule(m_pDevice, "shader/triangle/vert.spv");
-    RHIShaderModule fragmentShaderModule(m_pDevice, "shader/triangle/frag.spv");
+    RHIShaderModule vertexShaderModule(m_pDevice, File::FromStdString(SHADER_DIR + "triangle/vert.spv"));
+    RHIShaderModule fragmentShaderModule(m_pDevice, File::FromStdString(SHADER_DIR + "triangle/frag.spv"));
 
     RHIPipelineVertexShaderStage vertexShaderStage;
     vertexShaderStage.shaderModule = vertexShaderModule.GetHandle();

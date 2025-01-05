@@ -60,7 +60,7 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
     m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_pCommandPool, m_vecVertices);
     m_pIndexBuffer = std::make_shared<RHIIndexBuffer>(m_pDevice, m_pCommandPool, m_vecIndices);
 
-    m_pTexture = std::make_shared<RHITexture>(m_pDevice, m_pCommandPool, File::FromStdString("assets/images/container2.png"));
+    m_pTexture = std::make_shared<RHITexture>(m_pDevice, m_pCommandPool, File::FromStdString(TEXTURE_DIR + "container2.png"));
 
     m_pDescriptorPool = std::make_shared<RHIDescriptorPool>(m_pDevice);
     std::vector<VkDescriptorSetLayout> vecDescriptorSetLayouts(MAX_FRAME_IN_FLIGHT, m_pDescriptorSetLayout->GetHandle());

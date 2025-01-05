@@ -10,6 +10,9 @@
 #define VERTEX_H
 #include "common/common.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
+
 struct Vertex
 {
     glm::vec3 pos;
@@ -41,7 +44,7 @@ struct Vertex
         attributeDescriptions[1].location = 1;
         attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
         attributeDescriptions[1].offset = offsetof(Vertex, color);
-        // uv0
+        // uv
         attributeDescriptions[2].binding = 0;
         attributeDescriptions[2].location = 2;
         attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
@@ -57,6 +60,16 @@ struct Vertex
         // attributeDescriptions[4].format = VK_FORMAT_R32G32B32A32_SFLOAT;
         // attributeDescriptions[4].offset = offsetof(Vertex, tangent);
         return attributeDescriptions;
+    }
+
+    bool operator==(const Vertex& other) const {
+        return pos == other.pos && color == other.color && texCoord == other.texCoord;
+    }
+};
+
+template<> struct std::hash<Vertex> {
+    size_t operator()(const Vertex& vertex) const noexcept {
+        return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
     }
 };
 #endif //VERTEX_H

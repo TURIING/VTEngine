@@ -11,8 +11,8 @@
 
 #include "utility/File.h"
 
-RHIShaderModule::RHIShaderModule(const std::shared_ptr<RHIDevice> &device, const std::string &shaderPath): m_pDevice(device) {
-    const auto shaderCode = File::FromStdString(shaderPath).GetShaderData();
+RHIShaderModule::RHIShaderModule(const std::shared_ptr<RHIDevice> &device, File &&file): m_pDevice(device) {
+    const auto shaderCode = file.GetShaderData();
 
     VkShaderModuleCreateInfo shaderModuleCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
@@ -20,7 +20,7 @@ RHIShaderModule::RHIShaderModule(const std::shared_ptr<RHIDevice> &device, const
         .pCode = reinterpret_cast<const uint32_t *>(shaderCode.data())
     };
     CALL_VK(vkCreateShaderModule(m_pDevice->GetLogicalDeviceHandle(), &shaderModuleCreateInfo, nullptr, &m_pShaderModule));
-    LOG_INFO("Shader module created successfully! Path: {}", shaderPath);
+    LOG_INFO("Shader module created successfully! Path: {}", file.GetPath());
 }
 
 RHIShaderModule::~RHIShaderModule() {

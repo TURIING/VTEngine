@@ -7,7 +7,14 @@
 
 #include "common/common.h"
 
+struct Vertex;
+
 enum class FileType { None, Image, Shader, Model };
+
+struct ModelData {
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
+};
 
 class File {
 public:
@@ -16,7 +23,9 @@ public:
     static File FromStdString(const std::string& path);
     [[nodiscard]] ImageInfo GetImageData();
     [[nodiscard]] std::vector<char> GetShaderData() const;
+    [[nodiscard]] ModelData&& GetModelData() const;
     [[nodiscard]] FileType GetFileType() const { return m_fileType; };
+    [[nodiscard]] std::string GetPath() const { return m_path; };
 
 private:
     static FileType GetFileTypeFromSuffix(const std::string &suffix);
