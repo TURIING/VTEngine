@@ -31,7 +31,9 @@ ImageInfo File::GetImageData() {
 
     int width, height, channels;
     m_pImageData = stbi_load(m_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-    LOG_ASSERT(m_pImageData != nullptr);
+    if(!m_pImageData) {
+        LOG_CRITICAL("Failed to load image from {}", m_path);
+    }
 
     return ImageInfo {
         .data = m_pImageData,
@@ -45,7 +47,7 @@ std::vector<char> File::GetShaderData() const {
     return Utility::readFile(m_path);
 }
 
-ModelData&& File::GetModelData() const {
+ModelData File::GetModelData() const {
     LOG_ASSERT(m_fileType == FileType::Model);
 
     ModelData modelData;
@@ -56,10 +58,10 @@ ModelData&& File::GetModelData() const {
     std::string err;
 
     if(!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, m_path.c_str())) {
-        LOG_CRITICAL("Failed to load obj file '{}': {}", m_path.c_str(), err.c_str());
+        LOG_CRITICAL("Failed to load obj file '{}': {}", m_path, err);
     }
 
-    std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+    std::unordered_map<Vertex, uint32_t> uniqueVertices {};
 
     for(const auto &shape : shapes) {
         for(const auto &index : shape.mesh.indices) {
@@ -72,8 +74,8 @@ ModelData&& File::GetModelData() const {
             };
 
             vertex.texCoord = {
-                attrib.texcoords[2 * index.vertex_index + 0],
-                1.0f - attrib.texcoords[2 * index.vertex_index + 1]                             // 反转纹理的Y坐标
+                attrib.texcoords[2 * index.texcoord_index + 0],
+                1.0f - attrib.texcoords[2 * index.texcoord_index + 1]                             // 反转纹理的Y坐标
             };
 
             vertex.color = { 1.0f, 1.0f, 1.0f };
@@ -87,7 +89,7 @@ ModelData&& File::GetModelData() const {
         }
     }
 
-    return std::move(modelData);
+    return modelData;
 }
 
 

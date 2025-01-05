@@ -9,8 +9,9 @@
 
 
 Mesh::Mesh(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandPool>& commandPool, File&& file): m_pDevice(device) {
-    const auto [vertices, indices] = file.GetModelData();
+    const auto &[vertices, indices] = file.GetModelData();
 
+    m_indexCount = indices.size();
     m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, commandPool, vertices);
     m_pIndexBuffer = std::make_shared<RHIIndexBuffer>(m_pDevice, commandPool, indices);
 }

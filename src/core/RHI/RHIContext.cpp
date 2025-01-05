@@ -20,6 +20,9 @@
 #include <core/RHI/RHIInstance.h>
 #include <core/RHI/RHISemaphore.h>
 
+#include "core/common/Material.h"
+#include "core/common/Mesh.h"
+#include "core/Render/RenderEntity.h"
 #include "core/RHI/RHIDepthResource.h"
 #include "core/RHI/RHIDescriptorPool.h"
 #include "core/RHI/RHIDescriptorSet.h"
@@ -57,10 +60,12 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
 
     this->createSyncObject();
 
-    m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_pCommandPool, m_vecVertices);
-    m_pIndexBuffer = std::make_shared<RHIIndexBuffer>(m_pDevice, m_pCommandPool, m_vecIndices);
+    m_pRenderEntity = std::make_shared<RenderEntity>(m_pDevice, m_pCommandPool);
 
-    m_pTexture = std::make_shared<RHITexture>(m_pDevice, m_pCommandPool, File::FromStdString(TEXTURE_DIR + "container2.png"));
+    // m_pVertexBuffer = std::make_shared<RHIVertexBuffer>(m_pDevice, m_pCommandPool, m_vecVertices);
+    // m_pIndexBuffer = std::make_shared<RHIIndexBuffer>(m_pDevice, m_pCommandPool, m_vecIndices);
+
+    // m_pTexture = std::make_shared<RHITexture>(m_pDevice, m_pCommandPool, File::FromStdString(TEXTURE_DIR + "container2.png"));
 
     m_pDescriptorPool = std::make_shared<RHIDescriptorPool>(m_pDevice);
     std::vector<VkDescriptorSetLayout> vecDescriptorSetLayouts(MAX_FRAME_IN_FLIGHT, m_pDescriptorSetLayout->GetHandle());
@@ -68,7 +73,10 @@ RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
         m_vecUniformBuffer.emplace_back(std::make_shared<RHIUniformBuffer>(m_pDevice, sizeof(GlobalUniformObject)));
         m_vecDescriptorSet.emplace_back(std::make_shared<RHIDescriptorSet>(m_pDevice, m_pDescriptorPool, m_pDescriptorSetLayout));
         m_vecDescriptorSet[i]->UpdateUniformBuffer(m_vecUniformBuffer[i], 0);
-        m_vecDescriptorSet[i]->UpdateTextureImage(m_pTexture->GetDescriptorImageInfo(), 1);
+        // m_vecDescriptorSet[i]->UpdateTextureImage(m_pTexture->GetDescriptorImageInfo(), 1);
+        for(const auto &[bindIndex, texture] : m_pRenderEntity->GetMaterial()->GetTextures()) {
+            m_vecDescriptorSet[i]->UpdateTextureImage(texture->GetDescriptorImageInfo(), bindIndex);
+        }
     }
 }
 
@@ -102,10 +110,10 @@ void RHIContext::Render() {
     VkDeviceSize offset[] = { 0 };
     const std::vector<VkDescriptorSet> vecDescriptorSets(1, m_vecDescriptorSet[m_currentFrameIndex]->GetHandle());
     m_pCommandBuffer->SetScissor(m_currentFrameIndex, 0, 1, scissor);
-    m_pCommandBuffer->BindVertexBuffer(m_currentFrameIndex, m_pVertexBuffer, offset, 0, 1);
-    m_pCommandBuffer->BindIndexBuffer(m_currentFrameIndex, m_pIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+    m_pCommandBuffer->BindVertexBuffer(m_currentFrameIndex, m_pRenderEntity->GetMesh()->GetVertexBuffer(), offset, 0, 1);
+    m_pCommandBuffer->BindIndexBuffer(m_currentFrameIndex, m_pRenderEntity->GetMesh()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
     m_pCommandBuffer->BindDescriptorSets(m_currentFrameIndex, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pForwardPipeLine->GetPipelineLayout(), vecDescriptorSets, 0);
-    m_pCommandBuffer->DrawIndex(m_currentFrameIndex, m_vecIndices.size(), 1, 0, 0, 0);
+    m_pCommandBuffer->DrawIndex(m_currentFrameIndex, m_pRenderEntity->GetMesh()->GetIndexCount(), 1, 0, 0, 0);
     m_pCommandBuffer->EndRenderPass(m_currentFrameIndex);
     m_pCommandBuffer->EndRecord(m_currentFrameIndex);
 
@@ -122,9 +130,11 @@ void RHIContext::Resize(Size size) {
 
     m_pSwapChain = std::make_shared<RHISwapChain>(m_pInstance, m_pDevice, m_pSurface, size);
 
+    m_pDepthResource = std::make_shared<RHIDepthResource>(m_pDevice, m_pCommandPool, size);
+
     const auto newSize = m_pSwapChain->GetSize();
     for(auto i = 0; i < m_pSwapChain->GetImageCount(); i++) {
-        m_vecFrameBuffer.emplace_back(std::make_shared<RHIFrameBuffer>(m_pDevice, m_pRenderPass, m_pSwapChain->GetImageView(i), newSize));
+        m_vecFrameBuffer.emplace_back(std::make_shared<RHIFrameBuffer>(m_pDevice, m_pRenderPass, m_pSwapChain->GetImageView(i), m_pDepthResource->GetImageView(), newSize));
     }
 }
 

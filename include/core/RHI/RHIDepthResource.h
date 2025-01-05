@@ -18,6 +18,6 @@ public:
 
 private:
     std::shared_ptr<RHIDevice> m_pDevice;
-    std::unique_ptr<RHIImage> m_pImage;
+    std::shared_ptr<RHIImage> m_pImage;
 };
 #endif //RHIDEPTHRESOURCE_H

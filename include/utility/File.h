@@ -23,7 +23,7 @@ public:
     static File FromStdString(const std::string& path);
     [[nodiscard]] ImageInfo GetImageData();
     [[nodiscard]] std::vector<char> GetShaderData() const;
-    [[nodiscard]] ModelData&& GetModelData() const;
+    [[nodiscard]] ModelData GetModelData() const;
     [[nodiscard]] FileType GetFileType() const { return m_fileType; };
     [[nodiscard]] std::string GetPath() const { return m_path; };
 

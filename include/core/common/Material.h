@@ -21,9 +21,10 @@ struct TextureBind {
 class Material {
 public:
     Material(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandPool> &commandPool, std::vector<TextureBind>& binds);
+    [[nodiscard]] std::unordered_map<uint32_t, std::shared_ptr<RHITexture>> GetTextures() const { return m_mapTexture; }
 
 private:
     std::shared_ptr<RHIDevice> m_pDevice;
     std::vector<TextureBind> m_vecTextureBind;
-    std::vector<std::shared_ptr<RHITexture>> m_vecTexture;
-}
+    std::unordered_map<uint32_t, std::shared_ptr<RHITexture>> m_mapTexture;
+};

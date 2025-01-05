@@ -15,7 +15,7 @@ RHIDepthResource::RHIDepthResource(const std::shared_ptr<RHIDevice>& device, con
         .aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT,
         .memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
     };
-    m_pImage = std::make_unique<RHIImage>(m_pDevice, commandPool, createInfo);
+    m_pImage = std::make_shared<RHIImage>(m_pDevice, commandPool, createInfo);
     m_pImage->TransitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_ASPECT_DEPTH_BIT);
 }
 

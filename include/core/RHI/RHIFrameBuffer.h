@@ -25,8 +25,6 @@ private:
     std::shared_ptr<RHIDevice> m_pDevice;
     VkFramebuffer m_pFramebuffer = nullptr;
     std::shared_ptr<RHIRenderPass> m_pRenderPass = nullptr;
-    VkImageView m_pColorImageView = nullptr;
-    VkImageView m_pDepthImageView = nullptr;
     Size m_size;
 };
 #endif //RHIFRAMEBUFFER_H
