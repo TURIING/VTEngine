@@ -39,11 +39,13 @@ ForwardPipeLine::ForwardPipeLine(const std::shared_ptr<RHIDevice> &device, const
     RHIPipelineDepthStencilState depthStencilState;
 
     const auto descriptorLayout = descriptorSetLayout->GetHandle();
+    std::vector<VkPushConstantRange> pushConstantRanges = { { VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant) } };
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
         .setLayoutCount = 1,
         .pSetLayouts = &descriptorLayout,
-        .pushConstantRangeCount = 0,
+        .pushConstantRangeCount = static_cast<uint32_t>(pushConstantRanges.size()),
+        .pPushConstantRanges = pushConstantRanges.data(),
     };
     m_pPipelineLayout = std::make_shared<RHIPipeLineLayout>(m_pDevice, pipelineLayoutCreateInfo);
 

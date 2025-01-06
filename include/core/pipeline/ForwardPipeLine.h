@@ -18,6 +18,10 @@ class RHIPipeLineLayout;
 class RHIRenderPass;
 class RHIDevice;
 
+struct PushConstant {
+    alignas(16) glm::mat4 model;
+};
+
 class ForwardPipeLine final{
 public:
     ForwardPipeLine(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIDescriptorSetLayout>& descriptorSetLayout);

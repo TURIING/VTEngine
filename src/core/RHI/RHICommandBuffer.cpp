@@ -109,6 +109,10 @@ void RHICommandBuffer::Submit(uint32_t currentFrameIndex, const std::shared_ptr<
     CALL_VK(vkQueueSubmit(m_pDevice->GetGraphicsQueue(), 1, &submitInfo, inFightFence->GetHandle()));
 }
 
+void RHICommandBuffer::PushConstants(uint32_t currentFrameIndex, VkPipelineLayout layout, VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* data) const {
+    vkCmdPushConstants(m_vecCommandBuffer[currentFrameIndex], layout, stageFlags, offset, size, data);
+}
+
 void RHICommandBuffer::BindVertexBuffer(uint32_t currentFrameIndex, const std::shared_ptr<RHIVertexBuffer> &buffer, VkDeviceSize *offset, uint32_t firstBindingIndex, uint32_t bindingCount) const {
     VkBuffer vertexBuffers[] = { buffer->GetHandle() };
     vkCmdBindVertexBuffers(m_vecCommandBuffer[currentFrameIndex], firstBindingIndex, bindingCount, vertexBuffers, offset);
