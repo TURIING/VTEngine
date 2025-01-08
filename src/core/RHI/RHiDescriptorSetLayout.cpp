@@ -4,21 +4,21 @@
 #include "core/RHI/RHIDescriptorSetLayout.h"
 #include "core/RHI/RHIDevice.h"
 
-RHIDescriptorSetLayout::RHIDescriptorSetLayout(const std::shared_ptr<RHIDevice> &device, const std::vector<RHIDescriptorType> &layoutDescriptor): m_pDevice(device) {
+RHIDescriptorSetLayout::RHIDescriptorSetLayout(const std::shared_ptr<RHIDevice> &device, const RHIDescriptorSetLayoutCreateInfo &createInfo): m_pDevice(device) {
     std::vector<VkDescriptorSetLayoutBinding> bindings;
 
-    for(auto i = 0; i < layoutDescriptor.size(); i++) {
+    for(const auto & [bindIndex, descriptorType] : createInfo.descriptorSetLayoutBindings) {
         VkDescriptorSetLayoutBinding binding {
-            .binding = static_cast<uint32_t>(i),
-            .descriptorType = gDescriptorTypeMap[layoutDescriptor[i]],
+            .binding = static_cast<uint32_t>(bindIndex),
+            .descriptorType = gDescriptorTypeMap[descriptorType],
             .descriptorCount = 1,
-            .stageFlags = gDescriptorShaderStageMap[layoutDescriptor[i]],
+            .stageFlags = gDescriptorShaderStageMap[descriptorType],
             .pImmutableSamplers = nullptr,
         };
         bindings.push_back(binding);
     }
 
-    VkDescriptorSetLayoutCreateInfo layoutCreateInfo {
+    const VkDescriptorSetLayoutCreateInfo layoutCreateInfo {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
         .bindingCount = static_cast<uint32_t>(bindings.size()),
         .pBindings = bindings.data()

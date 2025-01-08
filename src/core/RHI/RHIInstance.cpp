@@ -23,7 +23,7 @@ VkBool32 VKAPI_CALL debugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT message
     return VK_FALSE;
 }
 
-RHIInstance::RHIInstance() {
+RHIInstance::RHIInstance(const RHIInstanceCreateInfo &createInfo): m_createInfo(createInfo) {
     this->createInstance();
     this->setupDebugMessenger();
 }
@@ -31,7 +31,7 @@ RHIInstance::RHIInstance() {
 RHIInstance::~RHIInstance() {
     LOG_ASSERT(m_pInstance != nullptr);
 
-    if constexpr(ENABLE_VALIDATION_LAYERS) {
+    if (m_createInfo.enableValidationLayers) {
         destroyDebugUtilsMessengerExt(m_pInstance, m_pDebugMessenger, nullptr);
     }
 
@@ -43,12 +43,8 @@ VkInstance RHIInstance::GetHandle() const {
 }
 
 void RHIInstance::createInstance() {
-    if(ENABLE_VALIDATION_LAYERS && !checkValidationLayerSupport()) {
+    if(m_pCreateInfo->enableValidationLayers && !checkValidationLayerSupport()) {
         LOG_CRITICAL("validation layers requested, but not available!");
-    }
-
-    if constexpr (ENABLE_VALIDATION_LAYERS) {
-        // REQUIRE_INSTANCE_EXT.push_back();
     }
 
     // appInfo
@@ -70,21 +66,20 @@ void RHIInstance::createInstance() {
         .flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR,
 #endif
         .pApplicationInfo = &appInfo,
-        .enabledExtensionCount = static_cast<uint32_t>(REQUIRE_INSTANCE_EXT.size()),
-        .ppEnabledExtensionNames = REQUIRE_INSTANCE_EXT.data()
+        .enabledExtensionCount = static_cast<uint32_t>(m_pCreateInfo->instanceExtensions.size()),
+        .ppEnabledExtensionNames = m_pCreateInfo->instanceExtensions.data()
     };
-    if(ENABLE_VALIDATION_LAYERS) {
+    if(m_pCreateInfo->enableValidationLayers) {
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{
             .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-            // .pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo,
             .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
             .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
             .pfnUserCallback = debugCallBack,
             .pUserData = nullptr,
         };
 
-        createInfo.enabledLayerCount = static_cast<uint32_t>(REQUIRE_VALIDATION_LAYERS.size());
-        createInfo.ppEnabledLayerNames = REQUIRE_VALIDATION_LAYERS.data();
+        createInfo.enabledLayerCount = static_cast<uint32_t>(m_pCreateInfo->layers.size());
+        createInfo.ppEnabledLayerNames = m_pCreateInfo->layers.data();
         createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
     }
     else {
@@ -96,14 +91,14 @@ void RHIInstance::createInstance() {
     LOG_INFO("Instance created");
 }
 
-bool RHIInstance::checkValidationLayerSupport() {
+bool RHIInstance::checkValidationLayerSupport() const {
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
     std::vector<VkLayerProperties> availableLayers(layerCount);
     vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-    for (const char* layerName : REQUIRE_VALIDATION_LAYERS) {
+    for (const char* layerName : m_pCreateInfo->layers) {
         bool layerFound = false;
         for (const auto& layerProperties : availableLayers) {
             if (strcmp(layerName, layerProperties.layerName) == 0) {
@@ -121,7 +116,7 @@ bool RHIInstance::checkValidationLayerSupport() {
 }
 
 void RHIInstance::setupDebugMessenger() {
-    if constexpr (!ENABLE_VALIDATION_LAYERS) return;
+    if (!m_pCreateInfo->enableValidationLayers) return;
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{
         .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,

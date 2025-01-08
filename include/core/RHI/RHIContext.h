@@ -59,7 +59,6 @@ private:
     std::shared_ptr<RHIRenderPass> m_pRenderPass;
     std::shared_ptr<ForwardPipeLine> m_pForwardPipeLine;
     std::vector<std::shared_ptr<RHIFrameBuffer>> m_vecFrameBuffer;
-    std::shared_ptr<RHICommandPool> m_pCommandPool;
     std::shared_ptr<RenderEntity> m_pRenderEntity;
     // std::shared_ptr<RHIVertexBuffer> m_pVertexBuffer;
     // std::shared_ptr<RHIIndexBuffer> m_pIndexBuffer;

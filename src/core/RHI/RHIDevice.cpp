@@ -39,7 +39,7 @@ QueueFamilyIndices QueueFamilyIndices::GetQueueFamilyIndices(VkPhysicalDevice ph
     return indices;
 }
 
-RHIDevice::RHIDevice(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHISurface> &surface) : m_pInstance(instance), m_pSurface(surface) {
+RHIDevice::RHIDevice(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHISurface> &surface, RHIDeviceCreateInfo &createInfo) : m_pInstance(instance), m_pSurface(surface), m_pCreateInfo(&createInfo) {
     this->createPhysicalDevice();
     this->createLogicalDevice();
 }
@@ -48,7 +48,7 @@ void RHIDevice::Present(const std::shared_ptr<RHISemaphore> &waitSemaphore, cons
     VkSemaphore waitSemaphores[] = { waitSemaphore->GetHandle() };
     VkSwapchainKHR swapChains[] = { swapChain->GetHandle() };
 
-    VkPresentInfoKHR presentInfo = {
+    const VkPresentInfoKHR presentInfo = {
         .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
         .waitSemaphoreCount = 1,
         .pWaitSemaphores = waitSemaphores,
@@ -104,7 +104,7 @@ bool RHIDevice::checkPresentSupport(VkPhysicalDevice device, uint32_t queueFamil
 void RHIDevice::createPhysicalDevice() {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(m_pInstance->GetHandle(), &deviceCount, nullptr);
-    LOG_ASSERT_INFO(deviceCount != 0, "failed to find GPUs with Vulkan support!");
+    LOG_ASSERT_INFO(deviceCount != 0, "Failed to find GPUs with Vulkan support!");
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(m_pInstance->GetHandle(), &deviceCount, devices.data());
@@ -138,19 +138,16 @@ void RHIDevice::createLogicalDevice() {
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
-    VkPhysicalDeviceFeatures deviceFeatures {
-        .samplerAnisotropy = VK_TRUE,
-    };
     VkDeviceCreateInfo createInfo {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         .pNext = nullptr,
         .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
         .pQueueCreateInfos = queueCreateInfos.data(),
-        .enabledExtensionCount = static_cast<uint32_t>(REQUIRE_DEVICE_EXTENSION.size()),
-        .ppEnabledExtensionNames = REQUIRE_DEVICE_EXTENSION.data(),
-        .pEnabledFeatures = &deviceFeatures,
+        .enabledExtensionCount = static_cast<uint32_t>(m_pCreateInfo->deviceExtensions.size()),
+        .ppEnabledExtensionNames = m_pCreateInfo->deviceExtensions.data(),
+        .pEnabledFeatures = &m_pCreateInfo->deviceFeatures,
     };
-    if constexpr(ENABLE_VALIDATION_LAYERS) {
+    if (m_pInstance->IsEnableValidationLayers()) {
         createInfo.enabledLayerCount = 1;
         createInfo.ppEnabledLayerNames = &VK_LAYER_KHRONOS_VALIDATION;
     }

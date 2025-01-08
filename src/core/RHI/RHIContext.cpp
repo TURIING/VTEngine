@@ -23,7 +23,6 @@
 #include "core/common/Material.h"
 #include "core/common/Mesh.h"
 #include "core/Render/RenderEntity.h"
-#include "core/RHI/RHIDepthResource.h"
 #include "core/RHI/RHIDescriptorPool.h"
 #include "core/RHI/RHIDescriptorSet.h"
 #include "core/RHI/RHIDescriptorSetLayout.h"
@@ -36,18 +35,6 @@
 constexpr int MAX_FRAME_IN_FLIGHT = 2;
 
 RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
-    m_pInstance = std::make_shared<RHIInstance>();
-    m_pSurface = std::make_shared<RHISurface>(m_pInstance, info.handle);
-    m_pDevice = std::make_shared<RHIDevice>(m_pInstance, m_pSurface);
-    m_pSwapChain = std::make_shared<RHISwapChain>(m_pInstance, m_pDevice, m_pSurface, info.size);
-
-    const auto queueFamilyIndices = QueueFamilyIndices::GetQueueFamilyIndices(m_pDevice->GetPhysicalDeviceHandle(), m_pSurface->GetHandle());
-    m_pCommandPool = std::make_shared<RHICommandPool>(m_pDevice, queueFamilyIndices.graphicsFamily.value());
-
-    const auto size = m_pSwapChain->GetSize();
-    m_pDepthResource = std::make_shared<RHIDepthResource>(m_pDevice, m_pCommandPool, size);
-
-    m_pRenderPass = std::make_shared<ForwardPass>(m_pDevice, m_pSwapChain->GetColorFormat(), m_pDevice->GetDepthFormatDetail());
     std::vector<RHIDescriptorType> vecTypes = { RHIDescriptorType::ConstantBuffer, RHIDescriptorType::Sampler };
     m_pDescriptorSetLayout = std::make_shared<RHIDescriptorSetLayout>(m_pDevice, vecTypes);
     m_pForwardPipeLine = std::make_shared<ForwardPipeLine>(m_pDevice, m_pRenderPass, m_pDescriptorSetLayout);

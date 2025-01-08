@@ -13,13 +13,26 @@
 
 class RHIDevice;
 
+struct RHIAttachmentInfo {
+    uint32_t attachmentIndex;
+    VkFormat format;
+};
+
+struct RHIRenderPassCreateInfo {
+    bool enableColorAttachment = true;
+    bool enableDepthAttachment = false;
+
+    std::vector<RHIAttachmentInfo> colorAttachments;
+    RHIAttachmentInfo depthAttachment;
+};
+
 class RHIRenderPass {
 public:
-    explicit RHIRenderPass(const std::shared_ptr<RHIDevice>& device);
-    virtual ~RHIRenderPass();
+    RHIRenderPass(const std::shared_ptr<RHIDevice>& device, RHIRenderPassCreateInfo &createInfo);
+    virtual ~RHIRenderPass() = 0;
     [[nodiscard]] VkRenderPass GetHandle() const { return m_pRenderPass; }
 
-protected:
+private:
     std::shared_ptr<RHIDevice> m_pDevice;
     VkRenderPass m_pRenderPass = nullptr;
 };

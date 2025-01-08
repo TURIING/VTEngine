@@ -25,9 +25,14 @@ struct QueueFamilyIndices{
     static QueueFamilyIndices GetQueueFamilyIndices(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 };
 
+struct RHIDeviceCreateInfo {
+    std::vector<const char*> deviceExtensions;
+    VkPhysicalDeviceFeatures deviceFeatures;
+};
+
 class RHIDevice {
 public:
-    explicit RHIDevice(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHISurface> &surface);
+    explicit RHIDevice(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHISurface> &surface, RHIDeviceCreateInfo &createInfo);
     [[nodiscard]] VkPhysicalDevice GetPhysicalDeviceHandle() const { return m_pPhysicalDevice; }
     [[nodiscard]] VkDevice GetLogicalDeviceHandle() const { return m_pLogicalDevice; }
     [[nodiscard]] VkQueue GetGraphicsQueue() const { return m_pGraphicsQueue; }
@@ -54,6 +59,7 @@ private:
     VkQueue m_pGraphicsQueue = nullptr;
     VkQueue m_pPresentQueue = nullptr;
     VkPhysicalDeviceProperties m_physicalGpuInfo {};
+    RHIDeviceCreateInfo *m_pCreateInfo = nullptr;
 };
 
 

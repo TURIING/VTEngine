@@ -37,8 +37,8 @@ public:
     VkResult AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) const;
 
 private:
-    [[nodiscard]] VkSurfaceFormatKHR chooseSwapSurfaceFormat();
-    [[nodiscard]] VkPresentModeKHR chooseSwapPresentMode();
+    [[nodiscard]] VkSurfaceFormatKHR chooseSwapSurfaceFormat() const;
+    [[nodiscard]] VkPresentModeKHR chooseSwapPresentMode() const;
     [[nodiscard]] VkExtent2D getSwapChainExtent();
     [[nodiscard]] uint32_t getSwapChainImageCount() const;
     void createSwapChainImagesAndViews();

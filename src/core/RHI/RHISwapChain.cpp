@@ -99,7 +99,7 @@ VkResult RHISwapChain::AcquireNextImage(const std::shared_ptr<RHISemaphore> &sem
 }
 
 // 选择合适的表面格式
-VkSurfaceFormatKHR RHISwapChain::chooseSwapSurfaceFormat() {
+VkSurfaceFormatKHR RHISwapChain::chooseSwapSurfaceFormat() const {
     for(const auto &availableFormat : m_swapChainSupportDetails.formats) {
         // 1.表示我们以B，G，R和A的顺序,每个颜色通道用8位无符号整型数表示，总共每像素使用32位表示
         // 2.表示SRGB颜色空间是否被支持
@@ -111,7 +111,7 @@ VkSurfaceFormatKHR RHISwapChain::chooseSwapSurfaceFormat() {
 }
 
 // 选择合适的呈现模式
-VkPresentModeKHR RHISwapChain::chooseSwapPresentMode() {
+VkPresentModeKHR RHISwapChain::chooseSwapPresentMode() const {
     for(const auto &availablePresentMode : m_swapChainSupportDetails.presentModes) {
         if(availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
             return availablePresentMode;

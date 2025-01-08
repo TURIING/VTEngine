@@ -12,29 +12,31 @@ class RHIDevice;
 enum class RHIDescriptorType
 {
     Sampler,
-    TextureSRV,
-    TextureUAV,
     ConstantBuffer,
-    StructuredBuffer
 };
 
 static std::unordered_map<RHIDescriptorType, VkDescriptorType> gDescriptorTypeMap = {
     { RHIDescriptorType::Sampler, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER },
-    { RHIDescriptorType::TextureSRV, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE },
-    { RHIDescriptorType::TextureUAV, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE },
     { RHIDescriptorType::ConstantBuffer, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
-    { RHIDescriptorType::StructuredBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER }
 };
 
 static std::unordered_map<RHIDescriptorType, VkShaderStageFlags> gDescriptorShaderStageMap = {
     { RHIDescriptorType::Sampler, VK_SHADER_STAGE_FRAGMENT_BIT },
     { RHIDescriptorType::ConstantBuffer, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
-    { RHIDescriptorType::TextureSRV, VK_SHADER_STAGE_FRAGMENT_BIT}
+};
+
+struct RHIDescriptorSetLayoutBindInfo {
+    uint32_t bindIndex = 0;
+    RHIDescriptorType descriptorType = RHIDescriptorType::Sampler;
+};
+
+struct RHIDescriptorSetLayoutCreateInfo {
+    std::vector<RHIDescriptorSetLayoutBindInfo> descriptorSetLayoutBindings;
 };
 
 class RHIDescriptorSetLayout {
 public:
-    RHIDescriptorSetLayout(const std::shared_ptr<RHIDevice> &device, const std::vector<RHIDescriptorType> &layoutDescriptor);
+    RHIDescriptorSetLayout(const std::shared_ptr<RHIDevice> &device, const RHIDescriptorSetLayoutCreateInfo &createInfo);
     ~RHIDescriptorSetLayout();
     [[nodiscard]] VkDescriptorSetLayout GetHandle() const { return m_pLayout; }
 
