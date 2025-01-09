@@ -23,10 +23,10 @@ RHIDescriptorSetLayout::RHIDescriptorSetLayout(const std::shared_ptr<RHIDevice> 
         .bindingCount = static_cast<uint32_t>(bindings.size()),
         .pBindings = bindings.data()
     };
-    CALL_VK(vkCreateDescriptorSetLayout(m_pDevice->GetLogicalDeviceHandle(), &layoutCreateInfo, nullptr, &m_pLayout));
+    CALL_VK(vkCreateDescriptorSetLayout(m_pDevice->GetHandle(), &layoutCreateInfo, nullptr, &m_pHandle));
     LOG_INFO("Descriptor set layout created.");
 }
 
 RHIDescriptorSetLayout::~RHIDescriptorSetLayout() {
-    vkDestroyDescriptorSetLayout(m_pDevice->GetLogicalDeviceHandle(), m_pLayout, nullptr);
+    vkDestroyDescriptorSetLayout(m_pDevice->GetHandle(), m_pHandle, nullptr);
 }

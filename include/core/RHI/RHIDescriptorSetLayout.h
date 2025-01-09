@@ -5,6 +5,7 @@
 #ifndef VTENGINE_RHIDESCRIPTORSETLAYOUT_H
 #define VTENGINE_RHIDESCRIPTORSETLAYOUT_H
 
+#include "RHIObject.h"
 #include "common/common.h"
 
 class RHIDevice;
@@ -34,14 +35,12 @@ struct RHIDescriptorSetLayoutCreateInfo {
     std::vector<RHIDescriptorSetLayoutBindInfo> descriptorSetLayoutBindings;
 };
 
-class RHIDescriptorSetLayout {
+class RHIDescriptorSetLayout final : public RHIObject<VkDescriptorSetLayout>{
 public:
     RHIDescriptorSetLayout(const std::shared_ptr<RHIDevice> &device, const RHIDescriptorSetLayoutCreateInfo &createInfo);
-    ~RHIDescriptorSetLayout();
-    [[nodiscard]] VkDescriptorSetLayout GetHandle() const { return m_pLayout; }
+    ~RHIDescriptorSetLayout() override;
 
 private:
-    VkDescriptorSetLayout m_pLayout = nullptr;
     std::shared_ptr<RHIDevice> m_pDevice;
 };
 #endif //VTENGINE_RHIDESCRIPTORSETLAYOUT_H

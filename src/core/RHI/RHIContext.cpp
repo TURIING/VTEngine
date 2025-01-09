@@ -32,20 +32,14 @@
 #include "core/RHI/RHIUniformBuffer.h"
 #include "utility/File.h"
 
-constexpr int MAX_FRAME_IN_FLIGHT = 2;
 
 RHIContext::RHIContext(const PlatformWindowInfo &info): m_size(info.size) {
     std::vector<RHIDescriptorType> vecTypes = { RHIDescriptorType::ConstantBuffer, RHIDescriptorType::Sampler };
     m_pDescriptorSetLayout = std::make_shared<RHIDescriptorSetLayout>(m_pDevice, vecTypes);
     m_pForwardPipeLine = std::make_shared<ForwardPipeLine>(m_pDevice, m_pRenderPass, m_pDescriptorSetLayout);
 
-    for(auto i = 0; i < m_pSwapChain->GetImageCount(); i++) {
-        m_vecFrameBuffer.emplace_back(std::make_shared<RHIFrameBuffer>(m_pDevice, m_pRenderPass, m_pSwapChain->GetImageView(i), m_pDepthResource->GetImageView(), size));
-    }
 
-    m_pCommandBuffer = std::make_shared<RHICommandBuffer>(m_pDevice, m_pCommandPool, MAX_FRAME_IN_FLIGHT);
 
-    this->createSyncObject();
 
     m_pRenderEntity = std::make_shared<RenderEntity>(m_pDevice, m_pCommandPool);
 
@@ -139,11 +133,6 @@ bool RHIContext::prepareFrame(uint32_t &imageIndex) {
 }
 
 void RHIContext::createSyncObject() {
-    for(auto i = 0; i < MAX_FRAME_IN_FLIGHT; i++) {
-        m_vecImageAvailableSemaphore.emplace_back(std::make_shared<RHISemaphore>(m_pDevice));
-        m_vecRenderFinishedSemaphore.emplace_back(std::make_shared<RHISemaphore>(m_pDevice));
-        m_vecInFlightFence.emplace_back(std::make_shared<RHIFence>(m_pDevice));
-    }
 }
 
 void RHIContext::cleanSwapChain() {

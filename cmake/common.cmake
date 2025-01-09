@@ -11,7 +11,7 @@ function(COMPILE_SHADER shader_file output_dir)
     set(output_file "${output_dir}/${PARENT_DIR}/${shader_name}.spv")
 
     # 检查输出目录是否存在，如果不存在则创建
-    if(NOT EXISTS ${output_dir})
+    if(NOT EXISTS ${output_dir}/${PARENT_DIR})
         file(MAKE_DIRECTORY ${output_dir}/${PARENT_DIR})
     endif()
 

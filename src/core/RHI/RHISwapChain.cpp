@@ -37,7 +37,7 @@ SwapChainSupportDetails SwapChainSupportDetails::GetSwapChainSupportDetails(VkPh
 RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHISurface> &surface, const Size &size)
     : m_pInstance(instance), m_pDevice(device), m_size(size){
     m_swapChainSupportDetails = SwapChainSupportDetails::GetSwapChainSupportDetails(m_pDevice->GetPhysicalDeviceHandle(), surface->GetHandle());
-    m_pSwapChainSurfaceFormat = this->chooseSwapSurfaceFormat();
+    m_pHandleSurfaceFormat = this->chooseSwapSurfaceFormat();
     VkPresentModeKHR presentMode = this->chooseSwapPresentMode();
     VkExtent2D swapExtent = this->getSwapChainExtent();
     uint32_t imageCount = this->getSwapChainImageCount();
@@ -46,8 +46,8 @@ RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const s
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
         .surface = surface->GetHandle(),
         .minImageCount = imageCount,
-        .imageFormat = m_pSwapChainSurfaceFormat.format,
-        .imageColorSpace = m_pSwapChainSurfaceFormat.colorSpace,
+        .imageFormat = m_pHandleSurfaceFormat.format,
+        .imageColorSpace = m_pHandleSurfaceFormat.colorSpace,
         .imageExtent = swapExtent,
         .imageArrayLayers = 1,                                                                  // 指定每个图像所包含的层次。通常，来说它的值为1, 但对于VR相关的应用程序来说，会使用更多的层次
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                                       // 我们在图像上进行绘制操作，也就是将图像作为一个颜色附着来使用
@@ -71,7 +71,7 @@ RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const s
     swapChainCreateInfo.clipped = VK_TRUE;                                                              // 设置为VK TRUE表示我们不关心被窗口系统中的其它窗口遮挡的像素的颜色
     swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    CALL_VK(vkCreateSwapchainKHR(m_pDevice->GetLogicalDeviceHandle(), &swapChainCreateInfo, nullptr, &m_pSwapChain));
+    CALL_VK(vkCreateSwapchainKHR(m_pDevice->GetHandle(), &swapChainCreateInfo, nullptr, &m_pHandle));
     LOG_INFO("Created SwapChain");
 
     this->createSwapChainImagesAndViews();
@@ -79,9 +79,9 @@ RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const s
 
 RHISwapChain::~RHISwapChain() {
     for(const auto pImageView: m_vecSwapChainImageViews) {
-        vkDestroyImageView(m_pDevice->GetLogicalDeviceHandle(), pImageView, nullptr);
+        vkDestroyImageView(m_pDevice->GetHandle(), pImageView, nullptr);
     }
-    vkDestroySwapchainKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, nullptr);
+    vkDestroySwapchainKHR(m_pDevice->GetHandle(), m_pHandle, nullptr);
 }
 
 VkImage RHISwapChain::GetImage(uint32_t index) const {
@@ -95,7 +95,7 @@ VkImageView RHISwapChain::GetImageView(uint32_t index) const {
 }
 
 VkResult RHISwapChain::AcquireNextImage(const std::shared_ptr<RHISemaphore> &semaphore, uint32_t &imageIndex) const {
-    return vkAcquireNextImageKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, UINT64_MAX, semaphore->GetHandle(), nullptr, &imageIndex);
+    return vkAcquireNextImageKHR(m_pDevice->GetHandle(), m_pHandle, UINT64_MAX, semaphore->GetHandle(), nullptr, &imageIndex);
 }
 
 // 选择合适的表面格式
@@ -139,9 +139,9 @@ uint32_t RHISwapChain::getSwapChainImageCount() const {
 void RHISwapChain::createSwapChainImagesAndViews() {
     uint32_t imageCount = 0;
     // images
-    vkGetSwapchainImagesKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, &imageCount, nullptr);
+    vkGetSwapchainImagesKHR(m_pDevice->GetHandle(), m_pHandle, &imageCount, nullptr);
     m_vecSwapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(m_pDevice->GetLogicalDeviceHandle(), m_pSwapChain, &imageCount, m_vecSwapChainImages.data());
+    vkGetSwapchainImagesKHR(m_pDevice->GetHandle(), m_pHandle, &imageCount, m_vecSwapChainImages.data());
 
     // views
     m_vecSwapChainImageViews.resize(imageCount);
@@ -150,7 +150,7 @@ void RHISwapChain::createSwapChainImagesAndViews() {
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
             .image = m_vecSwapChainImages[i],
             .viewType = VK_IMAGE_VIEW_TYPE_2D,
-            .format = m_pSwapChainSurfaceFormat.format,
+            .format = m_pHandleSurfaceFormat.format,
             .components = {
                 .r = VK_COMPONENT_SWIZZLE_IDENTITY,
                 .g = VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -165,7 +165,7 @@ void RHISwapChain::createSwapChainImagesAndViews() {
                 .layerCount = 1,
             }
         };
-        CALL_VK(vkCreateImageView(m_pDevice->GetLogicalDeviceHandle(), &imageViewCreateInfo, nullptr, &m_vecSwapChainImageViews[i]));
+        CALL_VK(vkCreateImageView(m_pDevice->GetHandle(), &imageViewCreateInfo, nullptr, &m_vecSwapChainImageViews[i]));
     }
     LOG_INFO("Created SwapChain images");
     LOG_INFO("SwapChain image size: ({}, {}), image count: {}", m_size.width, m_size.height, imageCount);

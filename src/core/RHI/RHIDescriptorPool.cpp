@@ -8,18 +8,15 @@
 
 constexpr uint32_t DESCRIPTOR_POOL_MAX_SET_COUNT = 100;
 
-RHIDescriptorPool::RHIDescriptorPool(const std::shared_ptr<RHIDevice>& device): m_pDevice(device) {
-    std::vector<VkDescriptorPoolSize> poolSizes(2);
+RHIDescriptorPool::RHIDescriptorPool(const std::shared_ptr<RHIDevice>& device, const RHIDescriptorPoolCreateInfo &createInfo): m_pDevice(device) {
+    std::vector<VkDescriptorPoolSize> poolSizes(createInfo.poolSizes.size());
 
-    poolSizes[0] = {
-        .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        .descriptorCount = 1000,
-    };
-
-    poolSizes[1] = {
-        .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .descriptorCount = 1000,
-    };
+    for(auto i = 0; i < createInfo.poolSizes.size(); ++i) {
+        poolSizes[i] = {
+            .type = gDescriptorTypeMap[createInfo.poolSizes[i].type],
+            .descriptorCount = createInfo.poolSizes[i].count,
+        };        
+    }
 
     const VkDescriptorPoolCreateInfo poolCreateInfo {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
@@ -27,10 +24,10 @@ RHIDescriptorPool::RHIDescriptorPool(const std::shared_ptr<RHIDevice>& device): 
         .poolSizeCount = static_cast<uint32_t>(poolSizes.size()),
         .pPoolSizes = poolSizes.data(),
     };
-    CALL_VK(vkCreateDescriptorPool(m_pDevice->GetLogicalDeviceHandle(), &poolCreateInfo, nullptr, &m_pDescriptorPool));
+    CALL_VK(vkCreateDescriptorPool(m_pDevice->GetHandle(), &poolCreateInfo, nullptr, &m_pHandle));
     LOG_INFO("Created descriptor pool");
 }
 
 RHIDescriptorPool::~RHIDescriptorPool() {
-    vkDestroyDescriptorPool(m_pDevice->GetLogicalDeviceHandle(), m_pDescriptorPool, nullptr);
+    vkDestroyDescriptorPool(m_pDevice->GetHandle(), m_pHandle, nullptr);
 }

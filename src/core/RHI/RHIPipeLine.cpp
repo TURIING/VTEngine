@@ -15,7 +15,7 @@ RHIPipeLine::RHIPipeLine(const std::shared_ptr<RHIDevice> &device, RHIPipelineSt
 }
 
 RHIPipeLine::~RHIPipeLine() {
-    vkDestroyPipeline(m_pDevice->GetLogicalDeviceHandle(), m_pPipeLine, nullptr);
+    vkDestroyPipeline(m_pDevice->GetHandle(), m_pHandle, nullptr);
 }
 
 void RHIPipeLine::createPipeline(RHIPipelineState &pipeLineState) {
@@ -49,6 +49,6 @@ void RHIPipeLine::createPipeline(RHIPipelineState &pipeLineState) {
         .subpass = pipeLineState.subPassIndex,
         .basePipelineHandle = VK_NULL_HANDLE,
     };
-    CALL_VK(vkCreateGraphicsPipelines(m_pDevice->GetLogicalDeviceHandle(), nullptr, 1, &pipelineCreateInfo, nullptr, &m_pPipeLine));
+    CALL_VK(vkCreateGraphicsPipelines(m_pDevice->GetHandle(), nullptr, 1, &pipelineCreateInfo, nullptr, &m_pHandle));
     LOG_INFO("Pipeline created");
 }

@@ -10,41 +10,23 @@
 #include <core/RHI/RHIDevice.h>
 #include <core/RHI/RHIRenderPass.h>
 
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHIRenderPass> &renderPass, VkImageView colorImageView, Size size)
-    : m_pDevice(device), m_pRenderPass(renderPass), m_size(size) {
-    std::vector<VkImageView> attachments = { colorImageView };
+RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHIRenderPass> &renderPass, RHIFrameBufferCreateInfo &createInfo)
+    : m_pDevice(device), m_pRenderPass(renderPass) {
 
     const VkFramebufferCreateInfo frameBufferCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
         .renderPass = m_pRenderPass->GetHandle(),
-        .attachmentCount = static_cast<uint32_t>(attachments.size()),
-        .pAttachments = attachments.data(),
-        .width = size.width,
-        .height = size.height,
-        .layers = 1,
+        .attachmentCount = static_cast<uint32_t>(createInfo.attachments.size()),
+        .pAttachments = createInfo.attachments.data(),
+        .width = createInfo.size.width,
+        .height = createInfo.size.height,
+        .layers = createInfo.layerCount,
     };
-    CALL_VK(vkCreateFramebuffer(m_pDevice->GetLogicalDeviceHandle(), &frameBufferCreateInfo, nullptr, &m_pFramebuffer));
-    LOG_INFO("FrameBuffer created");
-}
-
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, VkImageView colorImageView, VkImageView depthImageView, Size size)
-    : m_pDevice(device), m_pRenderPass(renderPass), m_size(size) {
-    std::vector<VkImageView> attachments = { colorImageView, depthImageView };
-
-    const VkFramebufferCreateInfo frameBufferCreateInfo = {
-        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-        .renderPass = m_pRenderPass->GetHandle(),
-        .attachmentCount = static_cast<uint32_t>(attachments.size()),
-        .pAttachments = attachments.data(),
-        .width = size.width,
-        .height = size.height,
-        .layers = 1,
-    };
-    CALL_VK(vkCreateFramebuffer(m_pDevice->GetLogicalDeviceHandle(), &frameBufferCreateInfo, nullptr, &m_pFramebuffer));
+    CALL_VK(vkCreateFramebuffer(m_pDevice->GetHandle(), &frameBufferCreateInfo, nullptr, &m_pHandle));
     LOG_INFO("FrameBuffer created");
 }
 
 RHIFrameBuffer::~RHIFrameBuffer() {
-    LOG_ASSERT(m_pFramebuffer);
-    vkDestroyFramebuffer(m_pDevice->GetLogicalDeviceHandle(), m_pFramebuffer, nullptr);
+    LOG_ASSERT(m_pHandle);
+    vkDestroyFramebuffer(m_pDevice->GetHandle(), m_pHandle, nullptr);
 }

@@ -19,7 +19,7 @@ struct RHIAttachmentInfo {
 };
 
 struct RHIRenderPassCreateInfo {
-    bool enableColorAttachment = true;
+    bool enableColorAttachment = false;
     bool enableDepthAttachment = false;
 
     std::vector<RHIAttachmentInfo> colorAttachments;

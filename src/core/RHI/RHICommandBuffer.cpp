@@ -28,12 +28,12 @@ RHICommandBuffer::RHICommandBuffer(const std::shared_ptr<RHIDevice> &device, con
         .commandBufferCount = count,
     };
     m_vecCommandBuffer.resize(count);
-    CALL_VK(vkAllocateCommandBuffers(m_pDevice->GetLogicalDeviceHandle(), &allocInfo, m_vecCommandBuffer.data()));
+    CALL_VK(vkAllocateCommandBuffers(m_pDevice->GetHandle(), &allocInfo, m_vecCommandBuffer.data()));
     LOG_INFO("Command buffer created");
 }
 
 RHICommandBuffer::~RHICommandBuffer() {
-    vkFreeCommandBuffers(m_pDevice->GetLogicalDeviceHandle(), m_pCommandPool->GetHandle(), static_cast<uint32_t>(m_vecCommandBuffer.size()), m_vecCommandBuffer.data());
+    vkFreeCommandBuffers(m_pDevice->GetHandle(), m_pCommandPool->GetHandle(), static_cast<uint32_t>(m_vecCommandBuffer.size()), m_vecCommandBuffer.data());
 }
 
 void RHICommandBuffer::Reset(uint32_t index) const {

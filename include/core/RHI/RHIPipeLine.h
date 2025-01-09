@@ -9,22 +9,21 @@
 #ifndef RHIPIPELINE_H
 #define RHIPIPELINE_H
 
+#include "RHIObject.h"
 #include "common/common.h"
 
 struct RHIPipelineState;
 class RHIDevice;
 
-class RHIPipeLine {
+class RHIPipeLine : public RHIObject<VkPipeline> {
 public:
     explicit RHIPipeLine(const std::shared_ptr<RHIDevice>& device, RHIPipelineState &pipeLineState);
-    virtual ~RHIPipeLine();
-    [[nodiscard]] VkPipeline GetHandle() const { return m_pPipeLine; }
+    ~RHIPipeLine() override;
 
 private:
     void createPipeline(RHIPipelineState &pipeLineState);
 
 protected:
-    VkPipeline m_pPipeLine = nullptr;
     std::shared_ptr<RHIDevice> m_pDevice;
 };
 #endif //RHIPIPELINE_H

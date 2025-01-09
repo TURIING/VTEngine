@@ -9,22 +9,25 @@
 #ifndef RHIFRAMEBUFFER_H
 #define RHIFRAMEBUFFER_H
 
+#include "RHIObject.h"
 #include "common/common.h"
 
 class RHIRenderPass;
 class RHIDevice;
 
-class RHIFrameBuffer {
+struct RHIFrameBufferCreateInfo {
+    std::vector<VkImageView> attachments;
+    Size size;
+    uint32_t layerCount = 1;
+};
+
+class RHIFrameBuffer final : public RHIObject<VkFramebuffer>{
 public:
-    RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, VkImageView colorImageView, Size size);
-    RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, VkImageView colorImageView, VkImageView depthImageView, Size size);
-    ~RHIFrameBuffer();
-    [[nodiscard]] VkFramebuffer GetHandle() const { return m_pFramebuffer; }
+    RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, RHIFrameBufferCreateInfo &createInfo);
+    ~RHIFrameBuffer() override;
 
 private:
     std::shared_ptr<RHIDevice> m_pDevice;
-    VkFramebuffer m_pFramebuffer = nullptr;
     std::shared_ptr<RHIRenderPass> m_pRenderPass = nullptr;
-    Size m_size;
 };
 #endif //RHIFRAMEBUFFER_H

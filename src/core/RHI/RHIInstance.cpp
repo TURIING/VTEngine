@@ -29,21 +29,17 @@ RHIInstance::RHIInstance(const RHIInstanceCreateInfo &createInfo): m_createInfo(
 }
 
 RHIInstance::~RHIInstance() {
-    LOG_ASSERT(m_pInstance != nullptr);
+    LOG_ASSERT(m_pHandle != nullptr);
 
     if (m_createInfo.enableValidationLayers) {
-        destroyDebugUtilsMessengerExt(m_pInstance, m_pDebugMessenger, nullptr);
+        destroyDebugUtilsMessengerExt(m_pHandle, m_pDebugMessenger, nullptr);
     }
 
-    vkDestroyInstance(m_pInstance, nullptr);
-}
-
-VkInstance RHIInstance::GetHandle() const {
-    return m_pInstance;
+    vkDestroyInstance(m_pHandle, nullptr);
 }
 
 void RHIInstance::createInstance() {
-    if(m_pCreateInfo->enableValidationLayers && !checkValidationLayerSupport()) {
+    if(m_createInfo.enableValidationLayers && !checkValidationLayerSupport()) {
         LOG_CRITICAL("validation layers requested, but not available!");
     }
 
@@ -66,10 +62,10 @@ void RHIInstance::createInstance() {
         .flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR,
 #endif
         .pApplicationInfo = &appInfo,
-        .enabledExtensionCount = static_cast<uint32_t>(m_pCreateInfo->instanceExtensions.size()),
-        .ppEnabledExtensionNames = m_pCreateInfo->instanceExtensions.data()
+        .enabledExtensionCount = static_cast<uint32_t>(m_createInfo.instanceExtensions.size()),
+        .ppEnabledExtensionNames = m_createInfo.instanceExtensions.data()
     };
-    if(m_pCreateInfo->enableValidationLayers) {
+    if(m_createInfo.enableValidationLayers) {
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{
             .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
             .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
@@ -78,8 +74,8 @@ void RHIInstance::createInstance() {
             .pUserData = nullptr,
         };
 
-        createInfo.enabledLayerCount = static_cast<uint32_t>(m_pCreateInfo->layers.size());
-        createInfo.ppEnabledLayerNames = m_pCreateInfo->layers.data();
+        createInfo.enabledLayerCount = static_cast<uint32_t>(m_createInfo.layers.size());
+        createInfo.ppEnabledLayerNames = m_createInfo.layers.data();
         createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
     }
     else {
@@ -87,7 +83,7 @@ void RHIInstance::createInstance() {
         createInfo.pNext = nullptr;
     }
 
-    CALL_VK(vkCreateInstance(&createInfo, nullptr, &m_pInstance));
+    CALL_VK(vkCreateInstance(&createInfo, nullptr, &m_pHandle));
     LOG_INFO("Instance created");
 }
 
@@ -98,7 +94,7 @@ bool RHIInstance::checkValidationLayerSupport() const {
     std::vector<VkLayerProperties> availableLayers(layerCount);
     vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-    for (const char* layerName : m_pCreateInfo->layers) {
+    for (const char* layerName : m_createInfo.layers) {
         bool layerFound = false;
         for (const auto& layerProperties : availableLayers) {
             if (strcmp(layerName, layerProperties.layerName) == 0) {
@@ -116,7 +112,7 @@ bool RHIInstance::checkValidationLayerSupport() const {
 }
 
 void RHIInstance::setupDebugMessenger() {
-    if (!m_pCreateInfo->enableValidationLayers) return;
+    if (!m_createInfo.enableValidationLayers) return;
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{
         .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
@@ -127,7 +123,7 @@ void RHIInstance::setupDebugMessenger() {
         .pUserData = nullptr,
     };
 
-    CALL_VK(createDebugUtilsMessengerExt(m_pInstance, &debugCreateInfo, nullptr, &m_pDebugMessenger));
+    CALL_VK(createDebugUtilsMessengerExt(m_pHandle, &debugCreateInfo, nullptr, &m_pDebugMessenger));
 }
 
 /**

@@ -9,6 +9,7 @@
 #ifndef RHIDEVICE_H
 #define RHIDEVICE_H
 
+#include "RHIObject.h"
 #include "common/common.h"
 
 class RHISurface;
@@ -30,11 +31,10 @@ struct RHIDeviceCreateInfo {
     VkPhysicalDeviceFeatures deviceFeatures;
 };
 
-class RHIDevice {
+class RHIDevice : public RHIObject<VkDevice> {
 public:
     explicit RHIDevice(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHISurface> &surface, RHIDeviceCreateInfo &createInfo);
     [[nodiscard]] VkPhysicalDevice GetPhysicalDeviceHandle() const { return m_pPhysicalDevice; }
-    [[nodiscard]] VkDevice GetLogicalDeviceHandle() const { return m_pLogicalDevice; }
     [[nodiscard]] VkQueue GetGraphicsQueue() const { return m_pGraphicsQueue; }
     [[nodiscard]] VkPhysicalDeviceProperties GetPhysicalGpuInfo() const { return m_physicalGpuInfo; }
     [[nodiscard]] VkFormat GetDepthFormatDetail() const;
@@ -55,7 +55,6 @@ private:
     std::shared_ptr<RHIInstance> m_pInstance = nullptr;
     std::shared_ptr<RHISurface> m_pSurface = nullptr;
     VkPhysicalDevice m_pPhysicalDevice = nullptr;
-    VkDevice m_pLogicalDevice = nullptr;
     VkQueue m_pGraphicsQueue = nullptr;
     VkQueue m_pPresentQueue = nullptr;
     VkPhysicalDeviceProperties m_physicalGpuInfo {};

@@ -60,8 +60,8 @@ void RHIDevice::Present(const std::shared_ptr<RHISemaphore> &waitSemaphore, cons
 }
 
 void RHIDevice::WaitIdle() const {
-    LOG_ASSERT(m_pLogicalDevice);
-    vkDeviceWaitIdle(m_pLogicalDevice);
+    LOG_ASSERT(m_pHandle);
+    vkDeviceWaitIdle(m_pHandle);
 }
 
 bool RHIDevice::checkDeviceSupport(VkPhysicalDevice device) const {
@@ -151,14 +151,14 @@ void RHIDevice::createLogicalDevice() {
         createInfo.enabledLayerCount = 1;
         createInfo.ppEnabledLayerNames = &VK_LAYER_KHRONOS_VALIDATION;
     }
-    CALL_VK(vkCreateDevice(m_pPhysicalDevice, &createInfo, nullptr, &m_pLogicalDevice));
+    CALL_VK(vkCreateDevice(m_pPhysicalDevice, &createInfo, nullptr, &m_pHandle));
     LOG_INFO("Logical Device created!");
 
     if(this->checkPresentSupport(m_pPhysicalDevice, indices.graphicsFamily.value())) {
-        vkGetDeviceQueue(m_pLogicalDevice, indices.graphicsFamily.value(), 0, &m_pGraphicsQueue);
+        vkGetDeviceQueue(m_pHandle, indices.graphicsFamily.value(), 0, &m_pGraphicsQueue);
     }
     if(this->checkPresentSupport(m_pPhysicalDevice, indices.presentFamily.value())) {
-        vkGetDeviceQueue(m_pLogicalDevice, indices.presentFamily.value(), 0, &m_pPresentQueue);
+        vkGetDeviceQueue(m_pHandle, indices.presentFamily.value(), 0, &m_pPresentQueue);
     }
 }
 
@@ -185,11 +185,11 @@ void RHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
         .usage = usage,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
-    CALL_VK(vkCreateBuffer(m_pLogicalDevice, &bufferInfo, nullptr, &buffer));
+    CALL_VK(vkCreateBuffer(m_pHandle, &bufferInfo, nullptr, &buffer));
 
     // 获取缓冲的内存需求
     VkMemoryRequirements memoryRequirements;
-    vkGetBufferMemoryRequirements(m_pLogicalDevice, buffer, &memoryRequirements);
+    vkGetBufferMemoryRequirements(m_pHandle, buffer, &memoryRequirements);
 
     // 分配内存
     const VkMemoryAllocateInfo allocateInfo {
@@ -197,9 +197,9 @@ void RHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemo
         .allocationSize = memoryRequirements.size,
         .memoryTypeIndex = this->FindMemoryType(memoryRequirements.memoryTypeBits, properties)
     };
-    CALL_VK(vkAllocateMemory(m_pLogicalDevice, &allocateInfo, nullptr, &bufferMemory));
+    CALL_VK(vkAllocateMemory(m_pHandle, &allocateInfo, nullptr, &bufferMemory));
 
-    vkBindBufferMemory(m_pLogicalDevice, buffer, bufferMemory, 0);
+    vkBindBufferMemory(m_pHandle, buffer, bufferMemory, 0);
 }
 
 uint32_t RHIDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const {

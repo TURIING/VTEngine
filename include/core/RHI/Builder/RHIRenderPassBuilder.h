@@ -5,6 +5,7 @@
 #ifndef RHIRENDERPASSBUILDER_H
 #define RHIRENDERPASSBUILDER_H
 
+#include "RHIBuilderBase.h"
 #include "common/common.h"
 #include "core/RHI/RHIRenderPass.h"
 
@@ -12,12 +13,12 @@ class RHIRenderPass;
 struct RHIAttachmentInfo;
 class RHIDevice;
 
-class RHIRenderPassBuilder {
+class RHIRenderPassBuilder final : public RHIBuilderBase<RHIRenderPass>{
 public:
     explicit RHIRenderPassBuilder(const std::shared_ptr<RHIDevice>& device);
     RHIRenderPassBuilder& AddColorAttachment(const RHIAttachmentInfo && attachmentInfo);
     RHIRenderPassBuilder& AddDepthAttachment(const RHIAttachmentInfo && attachmentInfo);
-    std::shared_ptr<RHIRenderPass> Build();
+    std::shared_ptr<RHIRenderPass> Build() override;
 
 private:
     std::shared_ptr<RHIDevice> m_pDevice;

@@ -4,17 +4,18 @@
 
 #ifndef RHIINSTANCEBUILDER_H
 #define RHIINSTANCEBUILDER_H
+#include "RHIBuilderBase.h"
 #include "common/common.h"
 #include "core/RHI/RHIInstance.h"
 
 
-class RHIInstanceBuilder {
+class RHIInstanceBuilder final : public RHIBuilderBase<RHIInstance>{
 public:
     RHIInstanceBuilder() = default;
     RHIInstanceBuilder& SetEnableValidationLayer(bool on);
     RHIInstanceBuilder& SetInstanceExtensions(const std::vector<const char*>& extensions);
     RHIInstanceBuilder& SetLayer(const std::vector<const char*>& layers);
-    std::shared_ptr<RHIInstance> Build();
+    std::shared_ptr<RHIInstance> Build() override;
 
 private:
     RHIInstanceCreateInfo m_createInfo {};

@@ -9,6 +9,7 @@
 #ifndef RHISWAPCHAIN_H
 #define RHISWAPCHAIN_H
 
+#include "RHIObject.h"
 #include "common/common.h"
 
 class RHISemaphore;
@@ -24,11 +25,10 @@ struct SwapChainSupportDetails {
     static SwapChainSupportDetails GetSwapChainSupportDetails(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 };
 
-class RHISwapChain {
+class RHISwapChain: public RHIObject<VkSwapchainKHR> {
 public:
     RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHISurface> &surface, const Size &size);
     ~RHISwapChain();
-    [[nodiscard]] VkSwapchainKHR GetHandle() const { return m_pSwapChain; }
     [[nodiscard]] uint32_t GetImageCount() const { return m_vecSwapChainImages.size(); }
     [[nodiscard]] VkImage GetImage(uint32_t index) const;
     [[nodiscard]] VkImageView GetImageView(uint32_t index) const;
@@ -47,7 +47,6 @@ private:
     std::shared_ptr<RHIInstance> m_pInstance;
     std::shared_ptr<RHIDevice> m_pDevice;
     Size m_size;
-    VkSwapchainKHR m_pSwapChain = nullptr;
     std::vector<VkImage> m_vecSwapChainImages;
     std::vector<VkImageView> m_vecSwapChainImageViews;
     VkSurfaceFormatKHR m_pSwapChainSurfaceFormat {};

@@ -9,6 +9,7 @@
 #ifndef RHIINSTANCE_H
 #define RHIINSTANCE_H
 
+#include "RHIObject.h"
 #include "common/common.h"
 
 struct RHIInstanceCreateInfo {
@@ -17,11 +18,10 @@ struct RHIInstanceCreateInfo {
     std::vector<const char *> layers;
 };
 
-class RHIInstance {
+class RHIInstance : public RHIObject<VkInstance>{
 public:
     explicit RHIInstance(const RHIInstanceCreateInfo &createInfo);
     ~RHIInstance();
-    [[nodiscard]] VkInstance GetHandle() const;
     [[nodiscard]] bool IsEnableValidationLayers() const { return m_createInfo.enableValidationLayers; }
 
 private:
@@ -32,7 +32,6 @@ private:
     static void destroyDebugUtilsMessengerExt(VkInstance, VkDebugUtilsMessengerEXT, const VkAllocationCallbacks *);
 
 private:
-    VkInstance m_pInstance = nullptr;
     VkDebugUtilsMessengerEXT m_pDebugMessenger = nullptr;
     VkSurfaceKHR m_pSurface = nullptr;
     RHIInstanceCreateInfo m_createInfo {};
