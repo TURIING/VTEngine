@@ -15,11 +15,10 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice> &device, RHIRender
     };
 
     std::vector<VkAttachmentDescription> attachments;
+    std::vector<VkAttachmentReference> vecColorAttachmentRef;
 
     // 颜色附着
     if(createInfo.enableColorAttachment) {
-        std::vector<VkAttachmentReference> vecColorAttachmentRef;
-
         for(const auto & [attachmentIndex, format] : createInfo.colorAttachments) {
             const VkAttachmentDescription colorAttachment = {
                 .format = format,
@@ -39,7 +38,7 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice> &device, RHIRender
             };
 
             VkAttachmentReference colorAttachmentRef = {
-                .attachment = attachmentIndex,                          // 用于指定要引用的附着在附着描述结构体数组中的索引
+                .attachment = attachmentIndex,                                              // 用于指定要引用的附着在附着描述结构体数组中的索引
                 .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL                          // 用于指定进行子流程时引用的附着使用的布局方式，Vulkan会在子流程开始时自动将引用的附着转换到layout成员变量指定的图像布局
             };
 
@@ -90,11 +89,11 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice> &device, RHIRender
         .dependencyCount = 1,
         .pDependencies = &dependency
     };
-    CALL_VK(vkCreateRenderPass(m_pDevice->GetLogicalDeviceHandle(), &renderPassInfo, nullptr, &m_pRenderPass));
+    CALL_VK(vkCreateRenderPass(m_pDevice->GetHandle(), &renderPassInfo, nullptr, &m_pRenderPass));
     LOG_INFO("RenderPass created");
 }
 
 RHIRenderPass::~RHIRenderPass() {
     LOG_ASSERT(m_pRenderPass);
-    vkDestroyRenderPass(m_pDevice->GetLogicalDeviceHandle(), m_pRenderPass, nullptr);
+    vkDestroyRenderPass(m_pDevice->GetHandle(), m_pRenderPass, nullptr);
 }

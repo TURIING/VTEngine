@@ -12,16 +12,11 @@
 #include <core/RHI/RHIPipeLine.h>
 #include "common/common.h"
 #include "core/RHI/RHIPipeLineLayout.h"
-#include "core/RHI/Builder/RHIBuilderBase.h"
 
 class RHIDescriptorSetLayout;
 class RHIPipeLineLayout;
 class RHIRenderPass;
 class RHIDevice;
-
-struct PushConstant {
-    alignas(16) glm::mat4 model;
-};
 
 struct ForwardPipeLineCreateInfo {
     std::string vertexShaderPath;
@@ -41,13 +36,13 @@ private:
     std::shared_ptr<RHIPipeLine> m_pPipeline;
 };
 
-class ForwardPipeLineBuilder final : public RHIBuilderBase<ForwardPipeLine> {
+class ForwardPipeLineBuilder final {
 public:
     ForwardPipeLineBuilder(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIDescriptorSetLayout>& descriptorSetLayout);
     ForwardPipeLineBuilder& SetVertexShaderPath(const std::string &vertexShaderPath);
     ForwardPipeLineBuilder& SetFragmentShaderPath(const std::string &fragmentShaderPath);
     ForwardPipeLineBuilder& SetPushConstantsRanges(const std::vector<VkPushConstantRange> &vecPushConstantRange);
-    std::shared_ptr<ForwardPipeLine> Build() override;
+    std::shared_ptr<ForwardPipeLine> Build();
 
 private:
     ForwardPipeLineCreateInfo m_createInfo {};

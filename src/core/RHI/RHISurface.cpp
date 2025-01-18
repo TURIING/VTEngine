@@ -19,6 +19,7 @@ RHISurface::RHISurface(const std::shared_ptr<RHIInstance> &instance, const void 
     };
 
     CALL_VK(vkCreateWin32SurfaceKHR(m_pInstance->GetHandle(), &surfaceCreateInfo, nullptr, &m_pSurface));
+    LOG_INFO("Successfully created surface!");
 #elif PLATFORM_MACOS
     const VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo{
         .sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK,
@@ -27,6 +28,7 @@ RHISurface::RHISurface(const std::shared_ptr<RHIInstance> &instance, const void 
     };
 
     CALL_VK(vkCreateMacOSSurfaceMVK(m_pInstance->GetHandle(), &surfaceCreateInfo, nullptr, &m_pSurface));
+    LOG_INFO("Successfully created surface!");
 #endif
 }
 

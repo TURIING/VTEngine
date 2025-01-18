@@ -13,7 +13,7 @@ RHISingleTimeCommandBuffer::RHISingleTimeCommandBuffer(RHIDevice *device, const 
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1
     };
-    CALL_VK(vkAllocateCommandBuffers(m_pDevice->GetLogicalDeviceHandle(), &allocateInfo, &m_pCommandBuffer));
+    CALL_VK(vkAllocateCommandBuffers(m_pDevice->GetHandle(), &allocateInfo, &m_pCommandBuffer));
 
     VkCommandBufferBeginInfo beginInfo {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -33,7 +33,7 @@ RHISingleTimeCommandBuffer::~RHISingleTimeCommandBuffer() {
     vkQueueSubmit(m_pDevice->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(m_pDevice->GetGraphicsQueue());
 
-    vkFreeCommandBuffers(m_pDevice->GetLogicalDeviceHandle(), m_pCommandPool->GetHandle(), 1, &m_pCommandBuffer);
+    vkFreeCommandBuffers(m_pDevice->GetHandle(), m_pCommandPool->GetHandle(), 1, &m_pCommandBuffer);
 }
 
 void RHISingleTimeCommandBuffer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) const {

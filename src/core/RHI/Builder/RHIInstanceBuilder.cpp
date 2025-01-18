@@ -14,7 +14,12 @@ RHIInstanceBuilder& RHIInstanceBuilder::SetEnableValidationLayer(bool on) {
 }
 
 RHIInstanceBuilder& RHIInstanceBuilder::SetInstanceExtensions(const std::vector<const char*>& extensions) {
-    m_createInfo.instanceExtensions = extensions;
+    if(m_createInfo.instanceExtensions.empty()) {
+        m_createInfo.instanceExtensions = extensions;
+    }
+    else {
+        m_createInfo.instanceExtensions.insert(m_createInfo.instanceExtensions.end(), extensions.begin(), extensions.end());
+    }
     return *this;
 }
 

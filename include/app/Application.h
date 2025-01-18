@@ -11,6 +11,13 @@
 
 #include "common/common.h"
 
+class MouseWheelScrollEvent;
+class MouseReleaseEvent;
+class MouseMoveEvent;
+class MousePressEvent;
+class InstanceSwitchEvent;
+class InstanceBase;
+enum class Instance;
 class RenderRequestEvent;
 class WindowResizeEvent;
 class RHIContext;
@@ -25,10 +32,18 @@ public:
     void ProcessEvent(Event &event);
 
 private:
-    void render(RenderRequestEvent &event) const;
-    void resize(WindowResizeEvent &event) const;
+    void renderEvent(RenderRequestEvent &event) const;
+    void resizeEvent(const WindowResizeEvent &event) const;
+    void switchInstanceEvent(const InstanceSwitchEvent &event);
+    void mousePressEvent(const MousePressEvent &event) const;
+    void mouseMoveEvent(const MouseMoveEvent &event) const;
+    void mouseReleaseEvent(const MouseReleaseEvent &event) const;
+    void mouseWheelScrollEvent(const MouseWheelScrollEvent &event) const;
+    void switchInstance(const Instance instance);
+
 private:
     MainWindow *m_pWindow = nullptr;
     std::shared_ptr<RHIContext> m_pRHIContext;
+    InstanceBase *m_pCurInstance = nullptr;
 };
 #endif //APPLICATION_H

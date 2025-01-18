@@ -37,7 +37,7 @@ SwapChainSupportDetails SwapChainSupportDetails::GetSwapChainSupportDetails(VkPh
 RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHISurface> &surface, const Size &size)
     : m_pInstance(instance), m_pDevice(device), m_size(size){
     m_swapChainSupportDetails = SwapChainSupportDetails::GetSwapChainSupportDetails(m_pDevice->GetPhysicalDeviceHandle(), surface->GetHandle());
-    m_pHandleSurfaceFormat = this->chooseSwapSurfaceFormat();
+    m_pSwapChainSurfaceFormat = this->chooseSwapSurfaceFormat();
     VkPresentModeKHR presentMode = this->chooseSwapPresentMode();
     VkExtent2D swapExtent = this->getSwapChainExtent();
     uint32_t imageCount = this->getSwapChainImageCount();
@@ -46,8 +46,8 @@ RHISwapChain::RHISwapChain(const std::shared_ptr<RHIInstance> &instance, const s
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
         .surface = surface->GetHandle(),
         .minImageCount = imageCount,
-        .imageFormat = m_pHandleSurfaceFormat.format,
-        .imageColorSpace = m_pHandleSurfaceFormat.colorSpace,
+        .imageFormat = m_pSwapChainSurfaceFormat.format,
+        .imageColorSpace = m_pSwapChainSurfaceFormat.colorSpace,
         .imageExtent = swapExtent,
         .imageArrayLayers = 1,                                                                  // 指定每个图像所包含的层次。通常，来说它的值为1, 但对于VR相关的应用程序来说，会使用更多的层次
         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                                       // 我们在图像上进行绘制操作，也就是将图像作为一个颜色附着来使用
@@ -150,7 +150,7 @@ void RHISwapChain::createSwapChainImagesAndViews() {
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
             .image = m_vecSwapChainImages[i],
             .viewType = VK_IMAGE_VIEW_TYPE_2D,
-            .format = m_pHandleSurfaceFormat.format,
+            .format = m_pSwapChainSurfaceFormat.format,
             .components = {
                 .r = VK_COMPONENT_SWIZZLE_IDENTITY,
                 .g = VK_COMPONENT_SWIZZLE_IDENTITY,

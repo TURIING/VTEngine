@@ -26,9 +26,11 @@ public:
     ~MainWindow() override;
     void Update();
     [[nodiscard]] void *GetSurfaceHandle() const;
+    [[nodiscard]] Size GetSurfaceSize() const;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
     inline void init(const std::string &title, const Size &size);

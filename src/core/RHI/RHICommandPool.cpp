@@ -15,7 +15,7 @@ RHICommandPool::RHICommandPool(const std::shared_ptr<RHIDevice> &device, uint32_
         .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
         .queueFamilyIndex = queueFamilyIndex,
     };
-    CALL_VK(vkCreateCommandPool(m_pDevice->GetLogicalDeviceHandle(), &poolInfo, nullptr, &m_pCommandPool));
+    CALL_VK(vkCreateCommandPool(m_pDevice->GetHandle(), &poolInfo, nullptr, &m_pCommandPool));
     LOG_INFO("Command pool created");
 }
 

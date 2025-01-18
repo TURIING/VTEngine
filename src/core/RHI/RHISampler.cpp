@@ -24,10 +24,10 @@ RHISampler::RHISampler(const std::shared_ptr<RHIDevice>& device, VkFilter magFil
         .minLod = 0.0f,
         .maxLod = 11.0f,
     };
-    CALL_VK(vkCreateSampler(m_pDevice->GetLogicalDeviceHandle(), &samplerInfo, nullptr, &m_pSampler));
+    CALL_VK(vkCreateSampler(m_pDevice->GetHandle(), &samplerInfo, nullptr, &m_pSampler));
     LOG_INFO("Created sampler");
 }
 
 RHISampler::~RHISampler() {
-    vkDestroySampler(m_pDevice->GetLogicalDeviceHandle(), m_pSampler, nullptr);
+    vkDestroySampler(m_pDevice->GetHandle(), m_pSampler, nullptr);
 }

@@ -29,7 +29,7 @@ struct RHIRenderPassCreateInfo {
 class RHIRenderPass {
 public:
     RHIRenderPass(const std::shared_ptr<RHIDevice>& device, RHIRenderPassCreateInfo &createInfo);
-    virtual ~RHIRenderPass() = 0;
+    virtual ~RHIRenderPass();
     [[nodiscard]] VkRenderPass GetHandle() const { return m_pRenderPass; }
 
 private:

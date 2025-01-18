@@ -22,27 +22,26 @@ constexpr float FOV = 45.0f;
 class Camera {
 public:
     Camera();
-    [[nodiscard]] float getFov() const { return m_fov; }
-    [[nodiscard]] glm::vec3 getUp() const;
-    [[nodiscard]] glm::vec3 getRight() const;
-    [[nodiscard]] glm::vec3 getForward() const;
-    [[nodiscard]] glm::quat getDirection() const;
-    [[nodiscard]] glm::mat4 getProjection() const { return m_projection; }
-    [[nodiscard]] glm::mat4 getViewMatrix() const { return m_viewMatrix; }
-    [[nodiscard]] glm::vec3 getPosition() { return m_position; }
-    void setWindowSize(Size _size);
-    void setDistance(float _offset);
-    void dispatch(Event _event, EventParam _param);
+    [[nodiscard]] float GetFov() const { return m_fov; }
+    [[nodiscard]] glm::vec3 GetUp() const;
+    [[nodiscard]] glm::vec3 GetRight() const;
+    [[nodiscard]] glm::vec3 GetForward() const;
+    [[nodiscard]] glm::quat GetDirection() const;
+    [[nodiscard]] glm::mat4 GetProjection() const { return m_projection; }
+    [[nodiscard]] glm::mat4 GetViewMatrix() const { return m_viewMatrix; }
+    [[nodiscard]] glm::vec3 GetPosition() const { return m_position; }
+    void SetWindowSize(const Size &size);
+    void SetDistance(float offset);
+    void OnMouseMove(double x, double y, MouseButton button);
+    void OnMouseWheelScroll(double delta);
 
 private:
     void updateViewMatrix();
-    void onMouseMove(double _x, double _y);
-    void onMouseWheelScroll(double _delta);
 
 private:
     glm::vec3 m_position = { 0, 0, 3 };
     glm::mat4 m_projection = glm::mat4(1.0f);
-    glm::mat4 m_viewMatrix;
+    glm::mat4 m_viewMatrix {};
     glm::vec3 m_focus = { 0, 0, 0 };
     float m_distance = 5.0f;
     //float m_aspect = 1.3f;

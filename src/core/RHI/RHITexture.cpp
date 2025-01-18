@@ -19,9 +19,9 @@ RHITexture::RHITexture(const std::shared_ptr<RHIDevice>& device, const std::shar
     m_pDevice->CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stageBuffer, stageBufferMemory);
 
     void *data = nullptr;
-    vkMapMemory(m_pDevice->GetLogicalDeviceHandle(), stageBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(m_pDevice->GetHandle(), stageBufferMemory, 0, imageSize, 0, &data);
     memcpy(data, imageInfo.data, static_cast<size_t>(imageSize));
-    vkUnmapMemory(m_pDevice->GetLogicalDeviceHandle(), stageBufferMemory);
+    vkUnmapMemory(m_pDevice->GetHandle(), stageBufferMemory);
 
     RHIImageCreateInfo imageCreateInfo = {
         .size = imageInfo.size,
@@ -36,8 +36,8 @@ RHITexture::RHITexture(const std::shared_ptr<RHIDevice>& device, const std::shar
     this->copyBufferToImage(stageBuffer, imageInfo.size);
     m_pImage->TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    vkDestroyBuffer(m_pDevice->GetLogicalDeviceHandle(), stageBuffer, nullptr);
-    vkFreeMemory(m_pDevice->GetLogicalDeviceHandle(), stageBufferMemory, nullptr);
+    vkDestroyBuffer(m_pDevice->GetHandle(), stageBuffer, nullptr);
+    vkFreeMemory(m_pDevice->GetHandle(), stageBufferMemory, nullptr);
 
     m_pSampler = std::make_shared<RHISampler>(m_pDevice);
 

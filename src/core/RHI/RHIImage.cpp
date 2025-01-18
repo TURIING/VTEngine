@@ -29,21 +29,21 @@ RHIImage::RHIImage(const std::shared_ptr<RHIDevice>& device, const std::shared_p
         imageCreateInfo.arrayLayers = 6;
         imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
     }
-    CALL_VK(vkCreateImage(m_pDevice->GetLogicalDeviceHandle(), &imageCreateInfo, nullptr, &m_pImage));
+    CALL_VK(vkCreateImage(m_pDevice->GetHandle(), &imageCreateInfo, nullptr, &m_pImage));
 
 
     // 分配图像内存
     VkMemoryRequirements memoryRequirements;
-    vkGetImageMemoryRequirements(m_pDevice->GetLogicalDeviceHandle(), m_pImage, &memoryRequirements);
+    vkGetImageMemoryRequirements(m_pDevice->GetHandle(), m_pImage, &memoryRequirements);
 
     VkMemoryAllocateInfo memoryAllocateInfo {
         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
         .allocationSize = memoryRequirements.size,
         .memoryTypeIndex = m_pDevice->FindMemoryType(memoryRequirements.memoryTypeBits, info.memoryPropertyFlags),
     };
-    CALL_VK(vkAllocateMemory(m_pDevice->GetLogicalDeviceHandle(), &memoryAllocateInfo, nullptr, &m_pDeviceMemory));
+    CALL_VK(vkAllocateMemory(m_pDevice->GetHandle(), &memoryAllocateInfo, nullptr, &m_pDeviceMemory));
 
-    vkBindImageMemory(m_pDevice->GetLogicalDeviceHandle(), m_pImage, m_pDeviceMemory, 0);
+    vkBindImageMemory(m_pDevice->GetHandle(), m_pImage, m_pDeviceMemory, 0);
 
     // 创建图像视图
     VkImageViewCreateInfo imageViewCreateInfo {
@@ -69,13 +69,13 @@ RHIImage::RHIImage(const std::shared_ptr<RHIDevice>& device, const std::shared_p
         imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE,
         imageViewCreateInfo.subresourceRange.layerCount = 6;
     }
-    CALL_VK(vkCreateImageView(m_pDevice->GetLogicalDeviceHandle(), &imageViewCreateInfo, nullptr, &m_pImageView));
+    CALL_VK(vkCreateImageView(m_pDevice->GetHandle(), &imageViewCreateInfo, nullptr, &m_pImageView));
 }
 
 RHIImage::~RHIImage() {
-    vkDestroyImage(m_pDevice->GetLogicalDeviceHandle(), m_pImage, nullptr);
-    vkFreeMemory(m_pDevice->GetLogicalDeviceHandle(), m_pDeviceMemory, nullptr);
-    vkDestroyImageView(m_pDevice->GetLogicalDeviceHandle(), m_pImageView, nullptr);
+    vkDestroyImage(m_pDevice->GetHandle(), m_pImage, nullptr);
+    vkFreeMemory(m_pDevice->GetHandle(), m_pDeviceMemory, nullptr);
+    vkDestroyImageView(m_pDevice->GetHandle(), m_pImageView, nullptr);
 }
 
 void RHIImage::TransitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) {

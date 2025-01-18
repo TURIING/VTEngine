@@ -15,7 +15,7 @@ class Material;
 
 class RenderEntity {
 public:
-    RenderEntity(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandPool>& commandPool);
+    RenderEntity(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandPool>& commandPool, const std::string &path);
     [[nodiscard]] std::shared_ptr<Material> GetMaterial() const { return m_pMaterial; }
     [[nodiscard]] std::shared_ptr<Mesh> GetMesh() const { return m_pMesh; }
 

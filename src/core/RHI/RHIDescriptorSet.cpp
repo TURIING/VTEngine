@@ -19,7 +19,7 @@ RHIDescriptorSet::RHIDescriptorSet(const std::shared_ptr<RHIDevice>& device, con
         .descriptorSetCount = static_cast<uint32_t>(descriptorSetLayouts.size()),
         .pSetLayouts = descriptorSetLayouts.data(),
     };
-    CALL_VK(vkAllocateDescriptorSets(m_pDevice->GetLogicalDeviceHandle(), &allocateInfo, &m_pDescriptorSet));
+    CALL_VK(vkAllocateDescriptorSets(m_pDevice->GetHandle(), &allocateInfo, &m_pDescriptorSet));
     LOG_INFO("RHI Descriptor Set Allocated");
 }
 
@@ -39,7 +39,7 @@ void RHIDescriptorSet::UpdateUniformBuffer(const std::shared_ptr<RHIUniformBuffe
         .descriptorType = gDescriptorTypeMap[RHIDescriptorType::ConstantBuffer],
         .pBufferInfo = &bufferInfo,
     };
-    vkUpdateDescriptorSets(m_pDevice->GetLogicalDeviceHandle(), 1, &writeDescriptorSet, 0, nullptr);
+    vkUpdateDescriptorSets(m_pDevice->GetHandle(), 1, &writeDescriptorSet, 0, nullptr);
 }
 
 void RHIDescriptorSet::UpdateTextureImage(VkDescriptorImageInfo imageInfo, uint32_t bindingIndex) const {
@@ -52,5 +52,5 @@ void RHIDescriptorSet::UpdateTextureImage(VkDescriptorImageInfo imageInfo, uint3
         .descriptorCount = 1,
         .pImageInfo = &imageInfo,
     };
-    vkUpdateDescriptorSets(m_pDevice->GetLogicalDeviceHandle(), 1, &writeDescriptorSet, 0, nullptr);
+    vkUpdateDescriptorSets(m_pDevice->GetHandle(), 1, &writeDescriptorSet, 0, nullptr);
 }

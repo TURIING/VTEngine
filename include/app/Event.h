@@ -12,9 +12,9 @@
 #include "common/common.h"
 
 enum class EventType {
-    RenderRequest,
+    RenderRequest, InstanceSwitch,
     WindowClose, WindowResize,
-    MousePress, MouseRelease, MouseMove,
+    MousePress, MouseRelease, MouseMove, MouseWheelScroll,
     KeyPress, KeyRelease
 };
 
@@ -27,6 +27,7 @@ enum EventKind {
 
 class Event {
 public:
+    virtual ~Event() = default;
     virtual EventType GetEventType() = 0;
     virtual int GetEventKind() = 0;
     virtual std::string GetEventName() { return typeid(*this).name(); }

@@ -13,11 +13,11 @@ RHISemaphore::RHISemaphore(const std::shared_ptr<RHIDevice> &device): m_pDevice(
     VkSemaphoreCreateInfo semaphoreInfo = {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
     };
-    CALL_VK(vkCreateSemaphore(m_pDevice->GetLogicalDeviceHandle(), &semaphoreInfo, nullptr, &m_pSemaphore));
+    CALL_VK(vkCreateSemaphore(m_pDevice->GetHandle(), &semaphoreInfo, nullptr, &m_pSemaphore));
     LOG_INFO("Semaphore created");
 }
 
 RHISemaphore::~RHISemaphore() {
     LOG_ASSERT(m_pSemaphore);
-    vkDestroySemaphore(m_pDevice->GetLogicalDeviceHandle(), m_pSemaphore, nullptr);
+    vkDestroySemaphore(m_pDevice->GetHandle(), m_pSemaphore, nullptr);
 }

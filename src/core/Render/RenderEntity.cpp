@@ -7,8 +7,8 @@
 #include "core/common/Mesh.h"
 #include "utility/File.h"
 
-RenderEntity::RenderEntity(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandPool>& commandPool): m_pDevice(device) {
-    m_pMesh = std::make_shared<Mesh>(m_pDevice, commandPool, File::FromStdString(MODEL_DIR + "viking room/viking_room.obj"));
+RenderEntity::RenderEntity(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandPool>& commandPool, const std::string &path): m_pDevice(device) {
+    m_pMesh = std::make_shared<Mesh>(m_pDevice, commandPool, File::FromStdString(path));
 
     std::vector<TextureBind> binds = {
         TextureBind { 1, MODEL_DIR + "viking room/viking_room.png" }

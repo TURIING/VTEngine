@@ -31,7 +31,7 @@ struct RHIDeviceCreateInfo {
     VkPhysicalDeviceFeatures deviceFeatures;
 };
 
-class RHIDevice : public RHIObject<VkDevice> {
+class RHIDevice final : public RHIObject<VkDevice> {
 public:
     explicit RHIDevice(const std::shared_ptr<RHIInstance> &instance, const std::shared_ptr<RHISurface> &surface, RHIDeviceCreateInfo &createInfo);
     [[nodiscard]] VkPhysicalDevice GetPhysicalDeviceHandle() const { return m_pPhysicalDevice; }

@@ -10,11 +10,11 @@
 #include <core/RHI/RHIDevice.h>
 
 RHIPipeLineLayout::RHIPipeLineLayout(const std::shared_ptr<RHIDevice> &device, const VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo): m_pDevice(device) {
-    CALL_VK(vkCreatePipelineLayout(m_pDevice->GetLogicalDeviceHandle(), &pipelineLayoutCreateInfo, nullptr, &m_pPipelineLayout));
+    CALL_VK(vkCreatePipelineLayout(m_pDevice->GetHandle(), &pipelineLayoutCreateInfo, nullptr, &m_pPipelineLayout));
     LOG_INFO("Pipeline Layout Created");
 }
 
 RHIPipeLineLayout::~RHIPipeLineLayout() {
     LOG_ASSERT(m_pPipelineLayout);
-    vkDestroyPipelineLayout(m_pDevice->GetLogicalDeviceHandle(), m_pPipelineLayout, nullptr);
+    vkDestroyPipelineLayout(m_pDevice->GetHandle(), m_pPipelineLayout, nullptr);
 }

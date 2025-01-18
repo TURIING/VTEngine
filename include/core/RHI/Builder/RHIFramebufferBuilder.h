@@ -5,16 +5,15 @@
 #ifndef RHIFRAMEBUFFERBUILDER_H
 #define RHIFRAMEBUFFERBUILDER_H
 
-#include "RHIBuilderBase.h"
 #include "core/RHI/RHIFrameBuffer.h"
 
-class RHIFrameBufferBuilder final : public RHIBuilderBase<RHIFrameBuffer>{
+class RHIFrameBufferBuilder final {
 public:
     RHIFrameBufferBuilder(const std::shared_ptr<RHIDevice> &device, const std::shared_ptr<RHIRenderPass> &renderPass);
     RHIFrameBufferBuilder& AddAttachmentImageView(VkImageView imageView);
     RHIFrameBufferBuilder& SetSize(const Size &size);
     RHIFrameBufferBuilder& SetLayerCount(uint32_t layers);
-    std::shared_ptr<RHIFrameBuffer> Build() override;
+    std::shared_ptr<RHIFrameBuffer> Build();
 
 private:
     RHIFrameBufferCreateInfo m_createInfo {};

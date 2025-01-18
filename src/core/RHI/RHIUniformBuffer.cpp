@@ -15,16 +15,16 @@ RHIUniformBuffer::RHIUniformBuffer(const std::shared_ptr<RHIDevice> &device, siz
 }
 
 RHIUniformBuffer::~RHIUniformBuffer() {
-    vkDestroyBuffer(m_pDevice->GetLogicalDeviceHandle(), m_pBuffer, nullptr);
-    vkFreeMemory(m_pDevice->GetLogicalDeviceHandle(), m_pBufferMemory, nullptr);
+    vkDestroyBuffer(m_pDevice->GetHandle(), m_pBuffer, nullptr);
+    vkFreeMemory(m_pDevice->GetHandle(), m_pBufferMemory, nullptr);
 }
 
 void RHIUniformBuffer::UpdateBuffer(const void *buffer) {
     LOG_ASSERT(buffer);
 
-    vkMapMemory(m_pDevice->GetLogicalDeviceHandle(), m_pBufferMemory, 0, m_bufferSize, 0, &m_pBufferMapped);
+    vkMapMemory(m_pDevice->GetHandle(), m_pBufferMemory, 0, m_bufferSize, 0, &m_pBufferMapped);
     memcpy(m_pBufferMapped, buffer, m_bufferSize);
-    vkUnmapMemory(m_pDevice->GetLogicalDeviceHandle(), m_pBufferMemory);
+    vkUnmapMemory(m_pDevice->GetHandle(), m_pBufferMemory);
     m_pBufferMapped = nullptr;
 }
 

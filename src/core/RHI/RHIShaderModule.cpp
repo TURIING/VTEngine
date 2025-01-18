@@ -19,11 +19,11 @@ RHIShaderModule::RHIShaderModule(const std::shared_ptr<RHIDevice> &device, File 
         .codeSize = shaderCode.size(),
         .pCode = reinterpret_cast<const uint32_t *>(shaderCode.data())
     };
-    CALL_VK(vkCreateShaderModule(m_pDevice->GetLogicalDeviceHandle(), &shaderModuleCreateInfo, nullptr, &m_pShaderModule));
+    CALL_VK(vkCreateShaderModule(m_pDevice->GetHandle(), &shaderModuleCreateInfo, nullptr, &m_pShaderModule));
     LOG_INFO("Shader module created successfully! Path: {}", file.GetPath());
 }
 
 RHIShaderModule::~RHIShaderModule() {
     LOG_ASSERT(m_pShaderModule);
-    vkDestroyShaderModule(m_pDevice->GetLogicalDeviceHandle(), m_pShaderModule, nullptr);
+    vkDestroyShaderModule(m_pDevice->GetHandle(), m_pShaderModule, nullptr);
 }

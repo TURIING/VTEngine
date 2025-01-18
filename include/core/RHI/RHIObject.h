@@ -6,7 +6,7 @@
 #define RHIOBJECT_H
 
 template<class T>
-class RHIObject<T> {
+class RHIObject {
 public:
     virtual ~RHIObject() = default;
     [[nodiscard]] T GetHandle() const { return m_pHandle; }
